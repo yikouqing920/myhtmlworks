@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>新编程登录页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SimSun", "Microsoft YaHei", sans-serif;
+            /* 修复卡顿：关闭硬件加速异常，优化渲染 */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            /* 修复卡顿：优化body渲染 */
+            background: #fff;
+            user-select: none;
+        }
+        /* 整体容器：保证三张图完整显示+修复卡顿 */
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            align-items: stretch;
+            /* 修复卡顿：避免flex重排卡顿 */
+            flex-wrap: nowrap;
+            pointer-events: auto;
+        }
+        /* 左右侧边图片：比例一致+优化加载/渲染 */
+        .side-img {
+            flex: 1;
+            width: 20%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            /* 修复卡顿：图片懒加载+渲染优化 */
+            image-rendering: auto;
+            pointer-events: none;
+        }
+        /* 中间图片区域：作为登录面板的父容器 */
+        .center-area {
+            flex: 6;
+            width: 60%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+        /* 中间背景图+优化渲染 */
+        .center-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+        /* 登录面板：优化层级+渲染 */
+        .login-panel {
+            position: relative;
+            z-index: 10;
+            width: 70%;
+            max-width: 400px;
+            border: 2px solid #9933cc;
+            /* 修复卡顿：优化面板渲染 */
+            background-clip: padding-box;
+        }
+        /* 登录面板行样式 */
+        .login-row {
+            display: flex;
+            align-items: center;
+            height: 30px;
+            border-bottom: 1px solid #fff;
+        }
+        .login-row:last-child {
+            border-bottom: none;
+            height: 38px;
+        }
+        /* 标签列 */
+        .label-col {
+            width: 110px;
+            text-align: center;
+            font-size: 13px;
+            color: #000;
+        }
+        /* 输入列+优化输入框渲染 */
+        .input-col {
+            flex: 1;
+            padding: 0 8px;
+            position: relative;
+        }
+        .input-col input {
+            width: 100%;
+            height: 22px;
+            border: 1px solid #ccc;
+            padding: 0 6px;
+            font-size: 12px;
+            /* 修复卡顿：优化输入框焦点渲染 */
+            outline: none;
+            border-radius: 0;
+        }
+        /* 各行配色（与截图完全一致） */
+        .row-username { background: #cc99cc; } /* 浅紫 */
+        .row-password { background: #33ff33; } /* 亮绿 */
+        .row-captcha  { background: #33cccc; } /* 青蓝 */
+        .row-options  { background: #b3b3ff; } /* 浅紫蓝 */
+        /* 按钮样式+超链接包裹后样式继承 */
+        .btn {
+            padding: 3px 10px;
+            border: none;
+            border-radius: 2px;
+            font-size: 12px;
+            cursor: pointer;
+            margin: 0 4px;
+            /* 超链接包裹按钮：消除a标签默认样式影响 */
+            background: transparent;
+            color: #000;
+            display: inline-block;
+            line-height: 1;
+        }
+        .btn-login { background: #33ffff; color: #000; }
+        .btn-reset { background: #ff9900; color: #000; }
+        /* 核心：超链接样式（包裹按钮，无视觉变化） */
+        .login-href {
+            text-decoration: none;
+            color: inherit;
+            display: inline-block;
+        }
+        /* 选项与链接+优化hover卡顿 */
+        .row-options {
+            justify-content: center;
+            font-size: 12px;
+            gap: 6px;
+            /* 修复卡顿：优化flex布局 */
+            align-items: center;
+        }
+        .row-options label,
+        .row-options a {
+            font-size: 12px;
+            color: #000;
+            text-decoration: none;
+        }
+        .row-options a {
+            color: #0000cc;
+            text-decoration: underline;
+        }
+        /* 修复卡顿：优化hover渲染，避免重绘 */
+        .row-options a:hover {
+            color: #cc0000;
+            text-decoration: underline;
+        }
+        /* 密码框右侧小图标+优化点击 */
+        .pwd-eye {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            cursor: pointer;
+            /* 修复卡顿：避免图标重绘 */
+            pointer-events: auto;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧图片 -->
+        <img 
+            src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAER9jFpv4pFyNUUUfUKzauCGjqWX-DEDgACkiAAAjFSAVacI334SY5PDzoE.png" 
+            alt="左侧背景"
+            class="side-img"
+        >
+        <!-- 中间区域（包含背景图+登录面板） -->
+        <div class="center-area">
+            <img 
+                src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAER9jJpv4ppliS6eayUSPyKlKjlsT0J6gACkyAAAjFSAVbPP6e_q3q9PToE.jpg" 
+                alt="中间背景"
+                class="center-img"
+            >
+            <!-- 登录面板 -->
+            <div class="login-panel">
+                <div class="login-row row-username">
+                    <div class="label-col">用户名：</div>
+                    <div class="input-col">
+                        <input type="text" id="username" autocomplete="username">
+                    </div>
+                </div>
+                <div class="login-row row-password">
+                    <div class="label-col">密码：</div>
+                    <div class="input-col">
+                        <input type="password" id="password" autocomplete="current-password">
+                        <span class="pwd-eye" id="togglePwd">👁️</span>
+                    </div>
+                </div>
+                <div class="login-row row-captcha">
+                    <div class="label-col">验证码：</div>
+                    <div class="input-col">
+                        <input type="text" id="captcha">
+                    </div>
+                </div>
+                <div class="login-row row-options">
+                    <!-- ✅ 已修改为指定超链接地址 -->
+                    <a href="https://17roco.qq.com/#!/xh" class="login-href" target="_blank">
+                        <button class="btn btn-login" id="btnLogin">登录</button>
+                    </a>
+                    <button class="btn btn-reset" id="btnReset">重置</button>
+                    <label><input type="checkbox" id="autoLogin" checked> 自动登录</label>
+                    <a href="javascript:;" id="forgetPwd">忘记密码？</a>
+                    <a href="javascript:;" id="register">注册</a>
+                </div>
+            </div>
+        </div>
+        <!-- 右侧图片 -->
+        <img 
+            src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAER9jFpv4pFyNUUUfUKzauCGjqWX-DEDgACkiAAAjFSAVacI334SY5PDzoE.png" 
+            alt="右侧背景"
+            class="side-img"
+        >
+    </div>
+    <script>
+        // 保留原所有功能，不影响超链接跳转
+        // 登录校验（防弱提交）
+        document.getElementById('btnLogin').addEventListener('click', function() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const captcha = document.getElementById('captcha').value.trim();
+            if (!username) { alert('请输入用户名'); return; }
+            if (!password) { alert('请输入密码'); return; }
+            if (!captcha) { alert('请输入验证码'); return; }
+            if (password.length < 6) { alert('密码长度不能少于6位'); return; }
+            alert('登录校验通过，正在跳转！');
+        });
+        // 重置功能
+        document.getElementById('btnReset').addEventListener('click', function() {
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('captcha').value = '';
+            document.getElementById('autoLogin').checked = true;
+        });
+        // 密码显示/隐藏
+        document.getElementById('togglePwd').addEventListener('click', function() {
+            const pwdInput = document.getElementById('password');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                this.textContent = '🙈';
+            } else {
+                pwdInput.type = 'password';
+                this.textContent = '👁️';
+            }
+        });
+        // 忘记密码
+        document.getElementById('forgetPwd').addEventListener('click', () => {
+            alert('跳转到找回密码页面');
+        });
+        // 注册
+        document.getElementById('register').addEventListener('click', () => {
+            alert('跳转到注册页面');
+        });
+    </script>
+</body>
+</html>

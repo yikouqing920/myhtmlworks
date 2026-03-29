@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美食页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* 9:16全屏背景容器，核心适配要求 */
+        body {
+            width: 100vw;
+            height: 100vh;
+            /* 强制9:16比例，覆盖全屏且居中 */
+            aspect-ratio: 9 / 16;
+            background: url("https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESZgVpyQKOi_6_Ah5MV3ZXSEzsxWVi8wAC2iEAAqaPSVayB-ciDgVR2DoE.png") no-repeat center center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            gap: 20px;
+        }
+        /* 长对话框样式，居中显示 */
+        .dialog {
+            width: 90%;
+            padding: 15px 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 20px;
+            line-height: 1.8;
+        }
+        /* 多色文字分段样式 */
+        .gold { color: gold; }
+        .red { color: red; }
+        .green { color: green; }
+        /* 中间图片，保持原比例+高清+居中 */
+        .food-img {
+            max-width: 90%;
+            height: auto;
+            object-fit: contain;
+            image-rendering: high-quality;
+        }
+        /* 搜索框样式，超链接按钮式 */
+        .search-box {
+            width: 90%;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .search-text {
+            font-size: 25px;
+            color: gold;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 居中长对话框，16字分三段多色 -->
+    <div class="dialog">
+        <span class="gold">云吞鲜汤，果汁甜香</span><br>
+        <span class="red">八刀猪脚，铁板炒饭</span><br>
+        <span class="green">鲜香俱全，舌尖美味</span>
+    </div>
+    <!-- 居中图片，保持原比例高清 -->
+    <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESZgFpyQF0g5NpzFnHwcu8LIbmFAG4GgACziEAAqaPSVafSCsJ9b0c5zoE.jpg" alt="美食图" class="food-img">
+    <!-- 搜索框超链接，指向百度 -->
+    <a href="https://m.baidu.com/" target="_blank" class="search-box">
+        <span class="search-text">搜索</span>
+    </a>
+</body>
+</html>

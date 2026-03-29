@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开心的运动</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+  }
+
+  /* 9:16全屏背景容器，支持滚动，确保底部文字可见 */
+  .container {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    aspect-ratio: 9 / 16;
+    background: url("https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESY39px99PFS5CaFL5GDEt1LJ-3CouyQACgiMAAqaPQVYiu1xWI4wUAzoE.png") no-repeat center center;
+    background-size: cover;
+    padding: 40px 20px 80px; /* 底部留足够边距，避免文字被截断 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    overflow-y: auto; /* 允许垂直滚动，确保底部内容可见 */
+    -webkit-overflow-scrolling: touch; /* 流畅滚动 */
+  }
+
+  /* 每组内容模块 */
+  .card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* 标题样式 */
+  .title {
+    font-weight: bold;
+    text-align: center;
+    color: gold;
+  }
+  .title-big {
+    font-size: 24px;
+  }
+  .title-normal {
+    font-size: 20px;
+  }
+
+  /* 图片：原比例放大一倍，优化加载 */
+  .card img {
+    display: block;
+    width: 90%;
+    height: auto;
+    object-fit: contain;
+    image-rendering: high-quality;
+    loading="lazy"; /* 懒加载，减轻页面压力 */
+    decoding="async"; /* 异步解码，避免阻塞渲染 */
+  }
+
+  /* 绿色鼓励语 */
+  .quote {
+    font-size: 16px;
+    color: #32cd32;
+    text-align: center;
+    line-height: 1.6;
+    max-width: 90%;
+    padding-bottom: 10px; /* 底部留缓冲，防止被遮挡 */
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- 1 河源人民公园 -->
+  <div class="card">
+    <div class="title title-big">河源人民公园</div>
+    <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESYyFpx9MzT2aL_7cKjowINT_cw8fCXQAC9yIAAqaPQVaAee-i-MnhpToE.jpg" alt="河源人民公园" loading="lazy">
+    <div class="quote">夜风正好，抬脚便是光，跑赢昨日的自己。</div>
+  </div>
+
+  <!-- 2 球场的故事 -->
+  <div class="card">
+    <div class="title title-normal">球场的故事</div>
+    <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESYyJpx9OuRYgc3oM0ZOy3_rDxgsJKQgAC-CIAAqaPQVYRHxOy64DdTjoE.jpg" alt="球场的故事" loading="lazy">
+    <div class="quote">别停，这一步跨出去，风会为你让路。</div>
+  </div>
+
+  <!-- 3 乒乓球的故事 -->
+  <div class="card">
+    <div class="title title-normal">乒乓球的故事</div>
+    <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESYyNpx9PukWhebMfnCjP1ecwv5K8AATwAAvsiAAKmj0FWz61yaf3q0X46BA.jpg" alt="乒乓球的故事" loading="lazy">
+    <div class="quote">山河在侧，迈开步，把远方踩成脚下。</div>
+  </div>
+</div>
+</body>
+</html>
