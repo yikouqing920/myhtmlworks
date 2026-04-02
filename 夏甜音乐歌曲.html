@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 核心适配：手机端禁止缩放、适配视口 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- 浏览器兼容：设置Edge/IE渲染模式、添加苹果触摸图标适配 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="apple-touch-icon" href="#" sizes="180x180">
+    <title>夏甜 - 音频播放</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 全局抗锯齿，文字更清晰 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        body {
+            /* 适配全屏幕，避免手机端留白 */
+            min-height: 100vh;
+            padding: 20px 0;
+            background-color: #f5f5f5;
+        }
+        .audio-container {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            /* 卡片化样式，适配电脑端视觉，手机端不突兀 */
+            padding: 30px 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        /* 歌曲标题样式：字号25、居中，夏蓝甜金 */
+        .song-title {
+            font-size: 25px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .xia {
+            color: blue;
+        }
+        .tian {
+            color: gold;
+        }
+        /* 音频控件全端适配：电脑端宽100%，手机端优化触摸区域 */
+        audio {
+            width: 100%;
+            outline: none;
+            /* 增大控件高度，提升手机端触摸体验 */
+            min-height: 50px;
+        }
+        /* 小屏手机适配：缩小标题字号，优化间距 */
+        @media (max-width: 375px) {
+            .song-title {
+                font-size: 22px;
+            }
+            .audio-container {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="audio-container">
+        <!-- 双色居中标题：夏(蓝) 甜(金) -->
+        <h2 class="song-title">《<span class="xia">夏</span><span class="tian">甜</span>》</h2>
+        <!-- 替换为新的音频文件路径，保留原属性+兼容性提示 -->
+        <audio controls src="https://raw.githubusercontent.com/yikouqing920/myhtmlworks/refs/heads/main/%E5%A4%8F%E7%94%9C.mp3" preload="none">
+            你的浏览器不支持音频播放，请更换主流浏览器（Chrome/Edge/微信浏览器等）尝试
+        
+    </div>
+</body>
+</html>

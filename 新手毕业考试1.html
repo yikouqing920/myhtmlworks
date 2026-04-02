@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- 新增：GitHub适配+多浏览器兼容 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="referrer" content="no-referrer">
+    <link rel="apple-touch-icon" href="#" sizes="180x180">
+    <title>综合展示页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 新增：全局抗锯齿+移动端点击无高亮，适配多端 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* 全局背景：全屏覆盖、固定不滚动，适配所有设备 */
+        body {
+            min-height: 100vh;
+            background: url("https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESZgVpyQKOi_6_Ah5MV3ZXSEzsxWVi8wAC2iEAAqaPSVayB-ciDgVR2DoE.png") no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            gap: 40px;
+            color: #fff;
+            font-family: "Microsoft YaHei", sans-serif;
+            /* 内容超出可滑动 */
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        /* 所有模块统一容器：自适应缩放、居中、半透背景提升可读性 */
+        .module {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            /* 新增：GitHub页面轻微过渡，提升体验 */
+            transition: all 0.2s ease;
+        }
+        .module:hover {
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+        }
+        /* 登录面板样式 */
+        .login-panel {
+            width: 100%;
+            max-width: 450px;
+        }
+        .login-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            gap: 15px;
+        }
+        .label-col {
+            width: 80px;
+            font-size: 16px;
+            color: gold;
+            font-weight: 500;
+        }
+        .input-col {
+            flex: 1;
+            position: relative;
+        }
+        .input-col input {
+            width: 100%;
+            height: 40px;
+            padding: 0 15px;
+            border: 2px solid gold;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            /* 新增：输入框聚焦样式，适配多端 */
+            transition: border-color 0.3s;
+        }
+        .input-col input:focus {
+            border-color: #ffd700cc;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .pwd-eye {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            /* 新增：图标点击手型，适配移动端 */
+            touch-action: manipulation;
+        }
+        .row-options {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+            /* 新增：按钮触摸适配，避免移动端延迟 */
+            touch-action: manipulation;
+        }
+        .btn-login {
+            background: gold;
+            color: #000;
+        }
+        .btn-login:hover {
+            background: #ffd700cc;
+        }
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid #fff;
+        }
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .login-row a {
+            color: skyblue;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .login-row a:hover {
+            text-decoration: underline;
+        }
+        /* 河源人民公园卡片样式 */
+        .card {
+            width: 100%;
+            text-align: center;
+        }
+        .title-big {
+            font-size: 24px;
+            color: gold;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .card img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 8px;
+            object-fit: cover;
+            /* 新增：图片懒加载优化，适配GitHub网络 */
+            loading: lazy;
+            transition: transform 0.3s;
+        }
+        .card img:hover {
+            transform: scale(1.02);
+        }
+        .quote {
+            font-size: 18px;
+            color: skyblue;
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+        /* 视频样式：自适应缩放，保证完整展示 + GitHub跨域适配 */
+        video {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 8px;
+            outline: none;
+            border: 2px solid gold;
+            /* 新增：视频多端播放适配，解决GitHub移动端播放问题 */
+            playsinline: true;
+            webkit-playsinline: true;
+            x5-playsinline: true;
+            touch-action: manipulation;
+        }
+        /* 音频样式 + GitHub路径适配 */
+        .audio-wrap {
+            width: 100%;
+            text-align: center;
+        }
+        .song-title {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        .xia {
+            color: blue;
+        }
+        .tian {
+            color: gold;
+        }
+        audio {
+            width: 100%;
+            max-width: 600px;
+            outline: none;
+            height: 40px;
+            /* 新增：音频控件高度优化，适配移动端触摸 */
+            min-height: 50px;
+        }
+        /* 表格样式：自适应缩放，保证格子比例 */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        table td {
+            border: 2px solid gold;
+            padding: 15px;
+            font-size: 20px;
+            color: #fff;
+            /* 新增：表格单元格hover效果，适配电脑端 */
+            transition: background 0.3s;
+        }
+        table td:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        /* 适配小屏/OPPO浏览器，缩小间距和字号 */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+                gap: 25px;
+                /* 新增：移动端背景适配，避免拉伸 */
+                background-attachment: scroll;
+            }
+            .module {
+                padding: 18px;
+                gap: 15px;
+            }
+            .login-row {
+                margin-bottom: 15px;
+            }
+            .input-col input {
+                height: 36px;
+                font-size: 14px;
+            }
+            .btn {
+                padding: 6px 15px;
+                font-size: 14px;
+            }
+            .title-big {
+                font-size: 20px;
+            }
+            .song-title {
+                font-size: 24px;
+            }
+            table td {
+                padding: 10px;
+                font-size: 16px;
+            }
+            .quote {
+                font-size: 16px;
+            }
+            /* 新增：小屏端音频/视频控件优化 */
+            audio {
+                min-height: 45px;
+            }
+            video {
+                border-width: 1px;
+            }
+        }
+        /* 新增：超小屏（手机竖屏）极致适配 */
+        @media (max-width: 375px) {
+            .song-title {
+                font-size: 22px;
+            }
+            .login-row {
+                gap: 10px;
+            }
+            .label-col {
+                width: 70px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 1. 登录面板模块（整合洛克王国登录链接） -->
+    <div class="module">
+        <h3 style="font-size:22px; color:gold; margin-bottom:10px;">洛克王国登录面板</h3>
+        <div class="login-panel">
+            <div class="login-row row-username">
+                <div class="label-col">用户名：</div>
+                <div class="input-col">
+                    <input type="text" id="username" autocomplete="username">
+                </div>
+            </div>
+            <div class="login-row row-password">
+                <div class="label-col">密码：</div>
+                <div class="input-col">
+                    <input type="password" id="password" autocomplete="current-password">
+                    <span class="pwd-eye" id="togglePwd">👁️</span>
+                </div>
+            </div>
+            <div class="login-row row-captcha">
+                <div class="label-col">验证码：</div>
+                <div class="input-col">
+                    <input type="text" id="captcha">
+                </div>
+            </div>
+            <div class="login-row row-options">
+                <a href="https://17roco.qq.com/#!/xh" class="login-href" target="_blank"><button class="btn btn-login" id="btnLogin">登录</button></a>
+                <button class="btn btn-reset" id="btnReset">重置</button>
+                <label><input type="checkbox" id="autoLogin" checked> 自动登录</label>
+                <a href="javascript:;" id="forgetPwd">忘记密码？</a>
+                <a href="javascript:;" id="register">注册</a>
+            </div>
+        </div>
+    </div>
+    <!-- 2. 河源人民公园卡片模块 -->
+    <div class="module">
+        <div class="card">
+            <div class="title title-big">河源人民公园</div>
+            <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESYyFpx9MzT2aL_7cKjowINT_cw8fCXQAC9yIAAqaPQVaAee-i-MnhpToE.jpg" alt="河源人民公园" loading="lazy">
+            <div class="quote">夜风正好，抬脚便是光，跑赢昨日的自己。</div>
+        </div>
+    </div>
+    <!-- 3. 视频播放模块（替换为GitHub路径+多端兼容） -->
+    <div class="module">
+        <h3 style="font-size:22px; color:gold;">茶山日常视频</h3>
+        <video controls preload="metadata" playsinline webkit-playsinline x5-playsinline>
+            <source src="https://raw.githubusercontent.com/yikouqing920/myhtmlworks/refs/heads/main/81201399.mp4" type="video/mp4">
+            您的浏览器不支持HTML5视频播放，请更换Chrome/Edge/OPPO浏览器等现代浏览器尝试
+        </video>
+    </div>
+    <!-- 4. 音频播放模块（替换为GitHub路径+多端兼容） -->
+    <div class="module">
+        <div class="audio-wrap">
+            <h2 class="song-title">《<span class="xia">夏</span><span class="tian">甜</span>》</h2>
+            <audio controls preload="none">
+                <source src="https://raw.githubusercontent.com/yikouqing920/myhtmlworks/refs/heads/main/%E5%A4%8F%E7%94%9C.mp3" type="audio/mp3">
+                您的浏览器不支持音频播放，请更换Chrome/Edge/微信浏览器等主流浏览器尝试
+            
+        </div>
+    </div>
+    <!-- 5. 万能表格模块 -->
+    <div class="module">
+        <h3 style="font-size:22px; color:gold;">万能表格</h3>
+        <table>
+            <tr>
+                <td>加油</td>
+                <td>努力</td>
+                <td>幸运</td>
+                <td>好运</td>
+            </tr>
+            <tr>
+                <td>幸福</td>
+                <td>平安</td>
+                <td>健康</td>
+                <td>暴富</td>
+            </tr>
+        </table>
+    </div>
+    <!-- 密码显示/隐藏小脚本（实操功能 + 多端适配） -->
+    <script>
+        const togglePwd = document.getElementById('togglePwd');
+        const password = document.getElementById('password');
+        // 新增：兼容移动端点击/触摸事件
+        togglePwd.addEventListener('click', togglePwdFunc);
+        togglePwd.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            togglePwdFunc();
+        });
+        function togglePwdFunc() {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '👁️' : '🙈';
+        };
+        // 重置按钮功能
+        const btnReset = document.getElementById('btnReset');
+        btnReset.onclick = function() {
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('captcha').value = '';
+            // 新增：重置后密码框恢复隐藏状态
+            password.setAttribute('type', 'password');
+            togglePwd.innerHTML = '👁️';
+        };
+        // 新增：GitHub页面加载完成提示，适配网络延迟
+        window.onload = function() {
+            console.log('页面加载完成，可正常使用所有功能');
+        };
+    </script>
+</body>
+</html>

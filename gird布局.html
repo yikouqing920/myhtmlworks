@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Grid图片网格 6行8列</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* 页面容器：居中+留白，超出滚动 */
+        body {
+            min-height: 100vh;
+            background: #f5f5f5;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* Grid核心容器：6行8列，间距30px */
+        .grid-container {
+            display: grid;
+            /* 8列：等分宽度，保证网格项等宽 */
+            grid-template-columns: repeat(8, 1fr);
+            /* 6行：自动适应高度，基于16:9比例 */
+            grid-template-rows: repeat(6, auto);
+            /* 行列间距统一30像素 */
+            gap: 30px;
+            width: 100%;
+            max-width: 1920px; /* 限制最大宽度，适配大屏 */
+        }
+        /* 网格项：严格16:9比例，相对定位 */
+        .grid-item {
+            width: 100%;
+            /* 16:9核心：padding-top=9/16*100% = 56.25% */
+            padding-top: 56.25%;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        /* 鼠标悬浮轻微放大 */
+        .grid-item:hover {
+            transform: scale(0.98);
+        }
+        /* 图片：绝对定位铺满网格项，保持16:9 */
+        .grid-item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 保持图片比例，裁剪多余部分 */
+        }
+        /* 图片预览遮罩：全屏居中，默认隐藏 */
+        .preview-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+        /* 预览图片：最大占满屏幕，保持16:9 */
+        .preview-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        /* 关闭按钮：预览框右上角 */
+        .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+            user-select: none;
+        }
+        /* 移动端适配：自动缩列，保证体验 */
+        @media (max-width: 1440px) {
+            .grid-container {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+        @media (max-width: 1024px) {
+            .grid-container {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+        }
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .close-btn {
+                font-size: 30px;
+                right: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Grid图片网格容器 -->
+    <div class="grid-container" id="gridContainer">
+        <!-- 网格项由JS自动生成，无需手动写48个 -->
+    </div>
+
+    <!-- 图片预览弹窗 -->
+    <div class="preview-mask" id="previewMask">
+        <span class="close-btn" id="closeBtn">×</span>
+        <img src="" alt="预览图" class="preview-img" id="previewImg">
+    </div>
+
+    <script>
+        // 图片地址（复用指定图片）
+        const imgSrc = "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESYyFpx9MzT2aL_7cKjowINT_cw8fCXQAC9yIAAqaPQVaAee-i-MnhpToE.jpg";
+        const gridContainer = document.getElementById('gridContainer');
+        const previewMask = document.getElementById('previewMask');
+        const previewImg = document.getElementById('previewImg');
+        const closeBtn = document.getElementById('closeBtn');
+        // 6行8列 = 48个网格项
+        const totalItem = 6 * 8;
+
+        // 自动生成48个网格项
+        for (let i = 0; i < totalItem; i++) {
+            const gridItem = document.createElement('div');
+            gridItem.className = 'grid-item';
+            gridItem.innerHTML = `<img src="${imgSrc}" alt="grid-img-${i+1}">`;
+            gridContainer.appendChild(gridItem);
+            // 给每个图片绑定点击预览事件
+            gridItem.addEventListener('click', () => {
+                previewImg.src = imgSrc;
+                previewMask.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // 隐藏页面滚动
+            });
+        }
+
+        // 关闭预览
+        closeBtn.addEventListener('click', closePreview);
+        // 点击遮罩空白处也可关闭
+        previewMask.addEventListener('click', (e) => {
+            if (e.target === previewMask) closePreview();
+        });
+        // 按ESC键关闭预览
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePreview();
+        });
+
+        // 关闭预览公共方法
+        function closePreview() {
+            previewMask.style.display = 'none';
+            document.body.style.overflow = 'auto'; // 恢复页面滚动
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>爱心烟花特效+实时时间</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* 粉色满屏背景，溢出隐藏，相对定位承载特效 */
+        body {
+            width: 100vw;
+            height: 100vh;
+            background: #ffc0cb;
+            overflow: hidden;
+            position: relative;
+            font-family: "Microsoft YaHei", sans-serif;
+            /* 滚动模板基础样式，适配小屏滚动 */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        /* 日期时间容器：居中悬浮，层级最高，半透背景增强可读性 */
+        .datetime-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 20px 30px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+        /* 日期样式：蓝色，大字号粗体 */
+        .date-box {
+            font-size: 40px;
+            font-weight: bold;
+            color: #0000ff;
+            margin-bottom: 15px;
+        }
+        /* 时间样式：蓝色，超大字号粗体，字间距优化 */
+        .time-box {
+            font-size: 60px;
+            font-weight: bold;
+            color: #0000ff;
+            letter-spacing: 3px;
+        }
+        /* 特效元素统一样式：绝对定位，指针事件穿透，不影响时间点击 */
+        .heart, .bubble, .firework {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+        }
+        /* 爱心样式：固定形状，尖部向下，不拉伸变形 */
+        .heart {
+            width: 30px;
+            height: 30px;
+            background: red;
+            /* 爱心核心形状，尖部向下 */
+            transform: rotate(45deg) translateY(7.5px);
+        }
+        .heart::before, .heart::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: red;
+        }
+        .heart::before {
+            top: -15px;
+            left: 0;
+        }
+        .heart::after {
+            top: 0;
+            left: -15px;
+        }
+        /* 泡泡样式：圆形，渐变透明，有光泽 */
+        .bubble {
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.9), inset 0 0 5px #fff;
+        }
+        /* OPPO/平板/电脑多端适配，缩放字号和内边距 */
+        @media (max-width: 768px) {
+            .datetime-container {
+                padding: 15px 20px;
+            }
+            .date-box {
+                font-size: 28px;
+            }
+            .time-box {
+                font-size: 40px;
+                letter-spacing: 2px;
+            }
+            .heart {
+                width: 20px;
+                height: 20px;
+            }
+            .heart::before, .heart::after {
+                width: 20px;
+                height: 20px;
+            }
+            .heart::before {
+                top: -10px;
+            }
+            .heart::after {
+                left: -10px;
+            }
+        }
+        @media (max-width: 480px) {
+            .datetime-container {
+                padding: 10px 15px;
+            }
+            .date-box {
+                font-size: 22px;
+                margin-bottom: 10px;
+            }
+            .time-box {
+                font-size: 30px;
+            }
+            .heart {
+                width: 15px;
+                height: 15px;
+            }
+            .heart::before, .heart::after {
+                width: 15px;
+                height: 15px;
+            }
+            .heart::before {
+                top: -7.5px;
+            }
+            .heart::after {
+                left: -7.5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 日期时间悬浮容器 -->
+    <div class="datetime-container">
+        <div class="date-box" id="dateBox"></div>
+        <div class="time-box" id="timeBox"></div>
+    </div>
+
+    <script>
+        // ===================== 实时日期时间模块 =====================
+        const dateBox = document.getElementById('dateBox');
+        const timeBox = document.getElementById('timeBox');
+        const weekArr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        // 更新日期时间方法
+        function updateDateTime() {
+            const now = new Date();
+            // 日期处理：补0，拼接星期
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const week = weekArr[now.getDay()];
+            dateBox.innerText = `${year}年${month}月${day}日 ${week}`;
+            // 时间处理：24小时制，补0到2位
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const second = String(now.getSeconds()).padStart(2, '0');
+            timeBox.innerText = `${hour}:${minute}:${second}`;
+        }
+        // 页面加载立即执行，每秒刷新一次
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // ===================== 特效核心配置 =====================
+        const SCREEN_WIDTH = window.innerWidth;
+        const SCREEN_HEIGHT = window.innerHeight;
+        const DURATION = 3600000; // 特效持续时间：1小时（毫秒）
+        const startTimer = Date.now(); // 记录特效开始时间
+
+        // ===================== 红色爱心向下飘落 =====================
+        function createHeart() {
+            // 超出1小时停止创建
+            if (Date.now() - startTimer > DURATION) return;
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            // 随机初始位置（水平），顶部开始
+            heart.style.left = `${Math.random() * SCREEN_WIDTH}px`;
+            heart.style.top = `-50px`;
+            // 随机飘落速度、透明度、旋转
+            const speed = Math.random() * 3 + 2; // 2-5px/帧
+            const opacity = Math.random() * 0.6 + 0.4; // 0.4-1
+            heart.style.opacity = opacity;
+            // 加入页面
+            document.body.appendChild(heart);
+            // 飘落动画
+            function moveHeart() {
+                const top = parseFloat(heart.style.top);
+                // 超出屏幕底部移除
+                if (top > SCREEN_HEIGHT || Date.now() - startTimer > DURATION) {
+                    heart.remove();
+                    return;
+                }
+                heart.style.top = `${top + speed}px`;
+                requestAnimationFrame(moveHeart);
+            }
+            moveHeart();
+            // 每隔300ms创建一个爱心，持续1小时
+            setTimeout(createHeart, 300);
+        }
+        // 启动爱心特效
+        createHeart();
+
+        // ===================== 泡泡左右往复飘动（左5秒→右5秒） =====================
+        function createBubble() {
+            if (Date.now() - startTimer > DURATION) return;
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            // 随机大小、初始位置、透明度
+            const size = Math.random() * 30 + 10; // 10-40px
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * SCREEN_WIDTH}px`;
+            bubble.style.top = `${Math.random() * SCREEN_HEIGHT}px`;
+            bubble.style.opacity = Math.random() * 0.7 + 0.3;
+            document.body.appendChild(bubble);
+            // 左右移动：左5秒（-5px/帧）→右5秒（5px/帧），循环
+            let isLeft = true;
+            let moveSpeed = 2; // 移动速度
+            const moveTime = 5000; // 单方向移动5秒
+            let directionTimer = Date.now();
+            function moveBubble() {
+                if (Date.now() - startTimer > DURATION) {
+                    bubble.remove();
+                    return;
+                }
+                // 切换移动方向
+                if (Date.now() - directionTimer > moveTime) {
+                    isLeft = !isLeft;
+                    directionTimer = Date.now();
+                }
+                const left = parseFloat(bubble.style.left);
+                // 边界检测，超出屏幕则回弹
+                if (left < 0) isLeft = false;
+                if (left > SCREEN_WIDTH - size) isLeft = true;
+                // 更新位置
+                bubble.style.left = `${isLeft ? left - moveSpeed : left + moveSpeed}px`;
+                requestAnimationFrame(moveBubble);
+            }
+            moveBubble();
+            // 每隔500ms创建一个泡泡
+            setTimeout(createBubble, 500);
+        }
+        // 启动泡泡特效
+        createBubble();
+
+        // ===================== 烟花随机绽放特效 =====================
+        function createFirework() {
+            if (Date.now() - startTimer > DURATION) return;
+            // 烟花容器：承载烟花粒子
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            // 随机绽放位置
+            firework.style.left = `${Math.random() * SCREEN_WIDTH}px`;
+            firework.style.top = `${Math.random() * SCREEN_HEIGHT}px`;
+            document.body.appendChild(firework);
+            // 烟花粒子数量：30-50个
+            const particleNum = Math.floor(Math.random() * 20) + 30;
+            for (let i = 0; i < particleNum; i++) {
+                const particle = document.createElement('div');
+                particle.style.width = '6px';
+                particle.style.height = '6px';
+                particle.style.borderRadius = '50%';
+                particle.style.background = '#ff0000'; // 烟花红色，和爱心统一
+                particle.style.position = 'absolute';
+                particle.style.top = '0';
+                particle.style.left = '0';
+                firework.appendChild(particle);
+                // 粒子随机绽放方向、速度、透明度
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 2;
+                const opacity = Math.random() * 0.8 + 0.2;
+                particle.style.opacity = opacity;
+                // 粒子绽放动画
+                let x = 0, y = 0;
+                function moveParticle() {
+                    x += Math.cos(angle) * speed;
+                    y += Math.sin(angle) * speed;
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    // 透明度渐变至0，移除粒子
+                    particle.style.opacity = parseFloat(particle.style.opacity) - 0.01;
+                    if (parseFloat(particle.style.opacity) < 0 || Date.now() - startTimer > DURATION) {
+                        particle.remove();
+                        return;
+                    }
+                    requestAnimationFrame(moveParticle);
+                }
+                moveParticle();
+            }
+            // 烟花绽放后移除容器
+            setTimeout(() => {
+                firework.remove();
+            }, 2000);
+            // 每隔1-3秒随机绽放一个烟花
+            setTimeout(createFirework, Math.random() * 2000 + 1000);
+        }
+        // 启动烟花特效
+        createFirework();
+
+        // ===================== 窗口大小适配 =====================
+        window.addEventListener('resize', () => {
+            SCREEN_WIDTH = window.innerWidth;
+            SCREEN_HEIGHT = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
