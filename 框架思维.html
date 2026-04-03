@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>万能表格 | 多端适配版</title>
+    <style>
+        /* 框架式样式设计：变量统一、组件隔离、响应式原子类 */
+        :root {
+            --primary-color: gold;
+            --border-color: #000;
+            --text-color: #000;
+            --bg-color: #fff;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --border-radius: 8px;
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+            --font-size-sm: 14px;
+            --font-size-md: 18px;
+            --font-size-lg: 25px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-sm);
+            gap: var(--spacing-md);
+        }
+
+        /* 组件：标题组件 */
+        .component-title {
+            font-size: var(--font-size-lg);
+            color: var(--primary-color);
+            font-weight: 600;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* 组件：表格容器组件 */
+        .component-table-container {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            min-height: 300px;
+            padding: var(--spacing-sm);
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        /* 组件：万能表格核心样式 */
+        .universal-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .universal-table td {
+            border: 1px solid var(--border-color);
+            text-align: center;
+            vertical-align: middle;
+            font-size: var(--font-size-md);
+            color: var(--text-color);
+            padding: 12px 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        /* 交互增强：单元格hover效果 */
+        .universal-table td:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+
+        /* 响应式适配（框架式断点管理） */
+        @media (max-width: 768px) {
+            :root {
+                --font-size-lg: 22px;
+                --font-size-md: 16px;
+                --spacing-md: 20px;
+            }
+            .component-table-container {
+                min-height: 250px;
+                padding: 12px;
+            }
+            .universal-table td {
+                padding: 10px 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --font-size-lg: 18px;
+                --font-size-md: 14px;
+                --spacing-md: 16px;
+            }
+            .component-table-container {
+                min-height: 200px;
+                padding: 8px;
+            }
+            .universal-table td {
+                padding: 8px 4px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面结构：遵循框架"布局-组件"分层思想 -->
+    <div class="page-container">
+        <!-- 标题组件 -->
+        <h1 class="component-title">万能表格</h1>
+        
+        <!-- 表格容器组件 -->
+        <div class="component-table-container">
+            <!-- 万能表格组件 -->
+            <table class="universal-table" id="universalTable">
+                <!-- 表格内容由JS动态渲染（框架式数据驱动） -->
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 框架思维核心：数据驱动视图、组件化逻辑封装
+        (function() {
+            // 1. 状态管理（框架式数据存储）
+            const state = {
+                // 表格核心数据（可动态修改扩展）
+                tableData: [
+                    ['加油', '努力', '幸运', '好运'],
+                    ['幸福', '平安', '健康', '暴富']
+                ],
+                // 表格配置项（框架式可配置）
+                tableConfig: {
+                    rowCount: 2,
+                    colCount: 4,
+                    cellTextColor: '#000',
+                    cellHoverBg: 'rgba(255, 215, 0, 0.1)'
+                }
+            };
+
+            // 2. 工具函数（框架式工具库）
+            const utils = {
+                // 动态渲染表格（数据驱动视图核心方法）
+                renderTable() {
+                    const table = document.getElementById('universalTable');
+                    // 清空表格
+                    table.innerHTML = '';
+                    // 循环渲染行和列
+                    state.tableData.forEach(rowData => {
+                        const tr = document.createElement('tr');
+                        rowData.forEach(cellData => {
+                            const td = document.createElement('td');
+                            td.textContent = cellData;
+                            // 应用配置项样式
+                            td.style.color = state.tableConfig.cellTextColor;
+                            td.style.transition = 'background-color 0.2s ease';
+                            td.addEventListener('mouseenter', () => {
+                                td.style.backgroundColor = state.tableConfig.cellHoverBg;
+                            });
+                            td.addEventListener('mouseleave', () => {
+                                td.style.backgroundColor = 'transparent';
+                            });
+                            tr.appendChild(td);
+                        });
+                        table.appendChild(tr);
+                    });
+                },
+
+                // 适配检测（框架式环境适配）
+                checkDevice() {
+                    const isMobile = window.innerWidth <= 768;
+                    return { isMobile, screenWidth: window.innerWidth };
+                }
+            };
+
+            // 3. 组件初始化（框架式启动流程）
+            function init() {
+                // 初始化渲染表格
+                utils.renderTable();
+                // 监听窗口大小变化，动态适配
+                window.addEventListener('resize', utils.renderTable);
+                // 打印设备信息（框架式调试支持）
+                console.log('设备信息：', utils.checkDevice());
+            }
+
+            // 4. 启动应用（框架式入口）
+            window.addEventListener('DOMContentLoaded', init);
+
+            // 5. 暴露全局API（框架式扩展能力）
+            window.TableApi = {
+                // 扩展：更新表格数据
+                updateData(newData) {
+                    if (Array.isArray(newData) && newData.length > 0) {
+                        state.tableData = newData;
+                        utils.renderTable();
+                    }
+                },
+                // 扩展：修改表格配置
+                updateConfig(newConfig) {
+                    state.tableConfig = { ...state.tableConfig, ...newConfig };
+                    utils.renderTable();
+                }
+            };
+        })();
+    </script>
+</body>
+</html>

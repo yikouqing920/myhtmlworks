@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>新编程登录页面 | 双端适配版</title>
+    <style>
+        /* 开发者工具优化：CSS变量统一管理、样式重置标准化、性能优先 */
+        :root {
+            /* 主题色：保留原设计配色 */
+            --color-purple-light: #cc99cc;
+            --color-green-bright: #33ff33;
+            --color-cyan: #33cccc;
+            --color-blue-purple: #b3b3ff;
+            --color-cyan-btn: #33ffff;
+            --color-orange-btn: #ff9900;
+            --color-border-main: #9933cc;
+            --color-text-main: #000;
+            --color-link: #0000cc;
+            --color-link-hover: #cc0000;
+            /* 尺寸变量：适配多端 */
+            --login-panel-border: 2px;
+            --login-row-height-pc: 30px;
+            --login-row-height-mobile: 40px;
+            --login-row-height-btn-pc: 38px;
+            --login-row-height-btn-mobile: 48px;
+            --input-height-pc: 22px;
+            --input-height-mobile: 28px;
+            /* 间距变量 */
+            --gap-sm: 4px;
+            --gap-md: 8px;
+            --gap-lg: 12px;
+        }
+
+        /* 标准化样式重置：消除浏览器默认差异（开发者工具调试基础） */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SimSun", "Microsoft YaHei", sans-serif;
+            touch-action: manipulation; /* 禁止移动端双击缩放，优化触控 */
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-size: 14px; /* 基准字号，适配rem */
+        }
+
+        /* 核心容器：弹性布局，多端自适应（开发者工具调试重点） */
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            align-items: stretch;
+            /* 防止移动端溢出 */
+            min-width: 320px;
+        }
+
+        /* 侧边图片：电脑端显示，手机端隐藏，优化加载性能 */
+        .side-img {
+            flex: 1;
+            width: 20%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            /* 图片懒加载，提升首屏速度 */
+            loading: lazy;
+        }
+
+        /* 中间区域：核心登录区，占比自适应，相对定位 */
+        .center-area {
+            flex: 6;
+            width: 60%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 最小宽度，防止挤压 */
+            min-width: 320px;
+        }
+
+        /* 中间背景图：全屏覆盖，层级基础 */
+        .center-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            /* 模糊优化，提升登录面板对比度 */
+            filter: brightness(0.9);
+        }
+
+        /* 登录面板：居中显示，多端尺寸适配，层级置顶 */
+        .login-panel {
+            position: relative;
+            z-index: 10;
+            width: 70%;
+            max-width: 400px;
+            min-width: 280px;
+            border: var(--login-panel-border) solid var(--color-border-main);
+            /* 移动端触控优化：增加阴影，提升质感 */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        /* 登录行：弹性布局，对齐方式统一 */
+        .login-row {
+            display: flex;
+            align-items: center;
+            height: var(--login-row-height-pc);
+            border-bottom: 1px solid #fff;
+            padding: 0 var(--gap-md);
+        }
+        /* 按钮行单独设置高度 */
+        .login-row:last-child {
+            border-bottom: none;
+            height: var(--login-row-height-btn-pc);
+            justify-content: center;
+            gap: var(--gap-md);
+            flex-wrap: wrap; /* 移动端自动换行 */
+        }
+
+        /* 标签列：固定宽度，居中对齐，文字不换行 */
+        .label-col {
+            width: 110px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--color-text-main);
+            white-space: nowrap;
+        }
+
+        /* 输入列：弹性占比，相对定位（用于密码眼睛图标） */
+        .input-col {
+            flex: 1;
+            padding: 0 var(--gap-md);
+            position: relative;
+        }
+
+        /* 输入框样式：统一尺寸，消除默认边框样式 */
+        .input-col input {
+            width: 100%;
+            height: var(--input-height-pc);
+            border: 1px solid #ccc;
+            padding: 0 var(--gap-md);
+            font-size: 12px;
+            outline: none; /* 消除默认聚焦轮廓 */
+            border-radius: 2px; /* 轻微圆角，提升体验 */
+        }
+        /* 输入框聚焦样式：开发者工具调试，增加视觉反馈 */
+        .input-col input:focus {
+            border-color: var(--color-border-main);
+            box-shadow: 0 0 0 2px rgba(153, 51, 204, 0.2);
+        }
+
+        /* 登录行配色：保留原设计，类名语义化 */
+        .row-username { background: var(--color-purple-light); }
+        .row-password { background: var(--color-green-bright); }
+        .row-captcha  { background: var(--color-cyan); }
+        .row-options  { background: var(--color-blue-purple); }
+
+        /* 按钮样式：统一尺寸，消除默认样式，增加交互反馈 */
+        .btn {
+            padding: 3px 10px;
+            border: none;
+            border-radius: 2px;
+            font-size: 12px;
+            cursor: pointer;
+            margin: 0 var(--gap-sm);
+            /* 移动端触控优化：增加点击区域 */
+            min-width: 60px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-login { background: var(--color-cyan-btn); color: var(--color-text-main); }
+        .btn-reset { background: var(--color-orange-btn); color: var(--color-text-main); }
+        /* 按钮hover/active：开发者工具调试，增加交互反馈 */
+        .btn:hover { opacity: 0.9; }
+        .btn:active { transform: scale(0.98); }
+
+        /* 选项与链接：统一样式，优化行高 */
+        .row-options label,
+        .row-options a {
+            font-size: 12px;
+            color: var(--color-text-main);
+            text-decoration: none;
+            align-items: center;
+            display: flex;
+            gap: var(--gap-sm);
+        }
+        .row-options a {
+            color: var(--color-link);
+            text-decoration: underline;
+        }
+        .row-options a:hover {
+            color: var(--color-link-hover);
+        }
+        /* 复选框：优化尺寸，提升触控体验 */
+        .row-options input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+
+        /* 密码眼睛图标：定位优化，增加触控区域 */
+        .pwd-eye {
+            position: absolute;
+            right: var(--gap-lg);
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px; /* 放大图标，提升触控 */
+            cursor: pointer;
+            /* 移动端触控优化：增加点击区域 */
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none; /* 禁止选中文字 */
+        }
+
+        /* ########### 媒体查询：手机端适配（开发者工具断点调试）########### */
+        /* 断点768px：平板/手机端，行业通用断点 */
+        @media (max-width: 768px) {
+            /* 隐藏侧边图片，释放屏幕空间 */
+            .side-img {
+                display: none;
+            }
+            /* 中间区域占满全屏 */
+            .center-area {
+                flex: 1;
+                width: 100%;
+            }
+            /* 登录面板加宽，适配手机屏幕 */
+            .login-panel {
+                width: 90%;
+                max-width: 380px;
+            }
+            /* 加高登录行，提升触控体验 */
+            .login-row {
+                height: var(--login-row-height-mobile);
+            }
+            .login-row:last-child {
+                height: var(--login-row-height-btn-mobile);
+            }
+            /* 加大输入框，提升触控 */
+            .input-col input {
+                height: var(--input-height-mobile);
+                font-size: 14px;
+            }
+            /* 加大标签字体，提升可读性 */
+            .label-col {
+                font-size: 14px;
+                width: 90px;
+            }
+            /* 加大按钮，提升触控 */
+            .btn {
+                height: 30px;
+                font-size: 14px;
+                min-width: 70px;
+            }
+            /* 加大选项/链接字体，提升可读性 */
+            .row-options label,
+            .row-options a {
+                font-size: 13px;
+            }
+        }
+
+        /* 断点480px：小屏手机适配 */
+        @media (max-width: 480px) {
+            .login-panel {
+                width: 95%;
+            }
+            .label-col {
+                width: 80px;
+            }
+            .row-options {
+                gap: var(--gap-sm);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧图片：电脑端显示，手机端隐藏 -->
+        <img 
+            src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAER9jFpv4pFyNUUUfUKzauCGjqWX-DEDgACkiAAAjFSAVacI334SY5PDzoE.png" 
+            alt="左侧背景"
+            class="side-img"
+            alt="登录背景左侧"
+        >
+        <!-- 中间区域：背景图+登录面板，双端核心 -->
+        <div class="center-area">
+            <img 
+                src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAER9jJpv4ppliS6eayUSPyKlKjlsT0J6gACkyAAAjFSAVbPP6e_q3q9PToE.jpg" 
+                class="center-img"
+                alt="登录背景主图"
+                loading: lazy
+            >
+            <!-- 登录面板：双端适配，功能完整 -->
+            <div class="login-panel">
+                <div class="login-row row-username">
+                    <div class="label-col">用户名：</div>
+                    <div class="input-col">
+                        <input type="text" id="username" autocomplete="username" placeholder="请输入用户名">
+                    </div>
+                </div>
+                <div class="login-row row-password">
+                    <div class="label-col">密码：</div>
+                    <div class="input-col">
+                        <input type="password" id="password" autocomplete="current-password" placeholder="请输入密码">
+                        <span class="pwd-eye" id="togglePwd">👁️</span>
+                    </div>
+                </div>
+                <div class="login-row row-captcha">
+                    <div class="label-col">验证码：</div>
+                    <div class="input-col">
+                        <input type="text" id="captcha" placeholder="请输入验证码">
+                    </div>
+                </div>
+                <div class="login-row row-options">
+                    <button class="btn btn-login" id="btnLogin">登录</button>
+                    <button class="btn btn-reset" id="btnReset">重置</button>
+                    <label><input type="checkbox" id="autoLogin" checked> 自动登录</label>
+                    <a href="javascript:;" id="forgetPwd">忘记密码？</a>
+                    <a href="javascript:;" id="register">注册</a>
+                </div>
+            </div>
+        </div>
+        <!-- 右侧图片：电脑端显示，手机端隐藏 -->
+        <img 
+            src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAER9jFpv4pFyNUUUfUKzauCGjqWX-DEDgACkiAAAjFSAVacI334SY5PDzoE.png" 
+            alt="右侧背景"
+            class="side-img"
+            alt="登录背景右侧"
+        >
+    </div>
+
+    <script>
+        // 开发者工具优化：JS代码模块化、错误处理、性能优化、交互增强
+        // 1. DOM元素缓存：避免重复获取，提升性能（开发者工具性能调试重点）
+        const dom = {
+            username: document.getElementById('username'),
+            password: document.getElementById('password'),
+            captcha: document.getElementById('captcha'),
+            btnLogin: document.getElementById('btnLogin'),
+            btnReset: document.getElementById('btnReset'),
+            togglePwd: document.getElementById('togglePwd'),
+            autoLogin: document.getElementById('autoLogin'),
+            forgetPwd: document.getElementById('forgetPwd'),
+            register: document.getElementById('register')
+        };
+
+        // 2. 登录校验：增强校验规则，添加友好提示，防重复提交
+        let isSubmitting = false; // 防重复提交标记
+        dom.btnLogin.addEventListener('click', function() {
+            // 防重复提交
+            if (isSubmitting) return;
+            isSubmitting = true;
+
+            // 获取并清洗输入值
+            const username = dom.username.value.trim();
+            const password = dom.password.value.trim();
+            const captcha = dom.captcha.value.trim();
+
+            // 校验逻辑
+            try {
+                if (!username) throw new Error('请输入用户名');
+                if (!password) throw new Error('请输入密码');
+                if (password.length < 6) throw new Error('密码长度不能少于6位');
+                if (!captcha) throw new Error('请输入验证码');
+                if (captcha.length < 4) throw new Error('验证码至少4位');
+
+                // 校验通过，模拟提交（实际项目替换为后端接口请求）
+                alert('✅ 登录校验通过，即将跳转到首页');
+                // 模拟接口请求延迟，重置提交标记
+                setTimeout(() => {
+                    isSubmitting = false;
+                    // 实际项目可添加跳转逻辑：window.location.href = '/home';
+                }, 1000);
+            } catch (err) {
+                // 校验失败，提示错误，重置提交标记
+                alert(`❌ ${err.message}`);
+                isSubmitting = false;
+                // 聚焦到错误输入框（开发者工具交互优化）
+                if (!username) dom.username.focus();
+                else if (!password) dom.password.focus();
+                else if (!captcha) dom.captcha.focus();
+            }
+        });
+
+        // 3. 重置功能：恢复初始状态，聚焦用户名输入框
+        dom.btnReset.addEventListener('click', function() {
+            dom.username.value = '';
+            dom.password.value = '';
+            dom.captcha.value = '';
+            dom.autoLogin.checked = true;
+            dom.username.focus(); // 交互优化：聚焦输入框
+            // 重置密码眼睛图标状态
+            dom.password.type = 'password';
+            dom.togglePwd.textContent = '👁️';
+        });
+
+        // 4. 密码显示/隐藏：优化交互，添加防误触，支持键盘回车
+        dom.togglePwd.addEventListener('click', function() {
+            const isPwd = dom.password.type === 'password';
+            dom.password.type = isPwd ? 'text' : 'password';
+            this.textContent = isPwd ? '🙈' : '👁️';
+            // 保持输入框聚焦
+            dom.password.focus();
+        });
+
+        // 5. 忘记密码：模拟跳转，添加交互提示
+        dom.forgetPwd.addEventListener('click', () => {
+            alert('🔗 即将跳转到密码找回页面，请验证手机号/邮箱');
+            // 实际项目替换为：window.location.href = '/forget-pwd';
+        });
+
+        // 6. 注册：模拟跳转，添加交互提示
+        dom.register.addEventListener('click', () => {
+            alert('🔗 即将跳转到用户注册页面，请完善信息');
+            // 实际项目替换为：window.location.href = '/register';
+        });
+
+        // 7. 键盘回车提交：优化PC/手机端交互（开发者工具交互调试）
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                dom.btnLogin.click();
+            }
+        });
+
+        // 8. 页面加载完成：聚焦用户名输入框，提升体验
+        window.addEventListener('DOMContentLoaded', function() {
+            dom.username.focus();
+        });
+
+        // 开发者工具调试：控制台打印信息，方便调试
+        console.log('✅ 登录页面加载完成，双端适配已启用');
+        console.log('📱 手机端自动隐藏侧边图，优化触控体验');
+        console.log('💻 电脑端保留原布局，支持键盘回车提交');
+    </script>
+</body>
+</html>

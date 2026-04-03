@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEwLjk2IDQuNjMgMi42NSAxMi45N0w0LjA2IDE0LjM4bDguOTA0LTguMzVMMTAuOTYgNC42M3oiIGZpbGw9IiM2NDZjZmYiLz48cGF0aCBkPSJNMjEuMzcgMTIuOTdsLTguMzUgOC4zNWwtMS40MS0xLjQxbDguMzUtOC4zNUwyMS4zNyAxMi45N3oiIGZpbGw9IiM1MzViZjIiLz48L3N2Zz4=">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Vite 双端适配模板（GitHub版）</title>
+  <style>
+    /* 基础变量 */
+    :root {
+      --primary: #646cff;
+      --primary-dark: #535bf2;
+      --bg: #f9f9f9;
+      --card-bg: #fff;
+      --text: #333;
+      --text-light: #666;
+      --border-radius: 12px;
+      --shadow: 0 4px 16px rgba(0,0,0,0.08);
+      --spacing: 16px;
+      --breakpoint-mobile: 768px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      padding: var(--spacing);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    /* 页面标题 */
+    .page-title {
+      font-size: 28px;
+      color: var(--primary);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* 卡片容器（响应式网格） */
+    .card-grid {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--spacing);
+    }
+
+    /* 功能卡片 */
+    .feature-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .card-icon {
+      font-size: 48px;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* 按钮样式 */
+    .action-btn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .action-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    /* 底部信息 */
+    .footer {
+      margin-top: auto;
+      color: var(--text-light);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    /* 响应式适配 */
+    @media (max-width: var(--breakpoint-mobile)) {
+      .page-title {
+        font-size: 24px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .action-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="page-title">🚀 Vite 双端适配模板</h1>
+
+  <div class="card-grid">
+    <!-- 卡片1：Vite 特性 -->
+    <div class="feature-card">
+      <div class="card-icon">⚡</div>
+      <h3 class="card-title">Vite 极速开发</h3>
+      <p class="card-desc">基于 Vite 构建，热更新秒级响应，开发体验拉满</p>
+      <button class="action-btn">启动开发</button>
+    </div>
+
+    <!-- 卡片2：双端适配 -->
+    <div class="feature-card">
+      <div class="card-icon">📱💻</div>
+      <h3 class="card-title">自动双端适配</h3>
+      <p class="card-desc">响应式布局，电脑端多列网格，手机端单列布局</p>
+      <button class="action-btn">切换设备预览</button>
+    </div>
+
+    <!-- 卡片3：NPM 集成 -->
+    <div class="feature-card">
+      <div class="card-icon">📦</div>
+      <h3 class="card-title">NPM 工程化</h3>
+      <p class="card-desc">支持 npm 依赖管理、打包构建、环境变量配置</p>
+      <button class="action-btn">查看脚本</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    Vite 4.x + NPM | 双端适配模板 | GitHub Pages 专用版
+  </div>
+
+  <script>
+    // 移除Vite模块化依赖，改为原生JS
+    console.log('✅ Vite 双端适配模板（GitHub版）启动成功');
+
+    // 按钮交互逻辑
+    document.querySelectorAll('.action-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const text = this.textContent.trim();
+        let alertMsg = '';
+
+        if (text === '启动开发') {
+          alertMsg = '📌 本地开发命令：\nnpm create vite@latest 项目名 -- --template vanilla\ncd 项目名\nnpm install\nnpm run dev';
+        } else if (text === '切换设备预览') {
+          alertMsg = '📱 手机端：自动适配单列布局\n💻 电脑端：多列网格布局\n可缩放浏览器窗口查看适配效果';
+        } else if (text === '查看脚本') {
+          alertMsg = '📦 核心 NPM 脚本：\n- npm run dev：启动开发服务器\n- npm run build：打包生产环境\n- npm run preview：预览打包结果';
+        }
+
+        alert(alertMsg);
+      });
+    });
+
+    // 检测设备类型
+    const isMobile = window.innerWidth <= 768;
+    console.log(`📌 当前设备：${isMobile ? '手机端' : '电脑端'}`);
+  </script>
+</body>
+</html>

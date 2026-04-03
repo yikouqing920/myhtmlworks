@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sass 双端适配（修复编译错误）</title>
+  <!-- 替换为稳定的Sass编译CDN（兼容所有浏览器） -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.11.1/sass.sync.min.js"></script>
+  <style id="scss-source" type="text/plain">
+    // ===================== Sass 变量（简化定义，避免编译冲突） =====================
+    $primary-color: #42b983;
+    $primary-dark: #359469;
+    $bg-color: #f5f7fa;
+    $card-bg: #ffffff;
+    $text-primary: #333333;
+    $text-secondary: #666666;
+    $border-radius: 12px;
+    $shadow: 0 4px 16px rgba(0,0,0,0.08);
+    $spacing-sm: 12px;
+    $spacing-md: 16px;
+    $spacing-lg: 24px;
+    $breakpoint-mobile: 768px;
+    $breakpoint-small-mobile: 480px;
+
+    // ===================== 混入（简化语法，避免复杂嵌套） =====================
+    @mixin flex-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @mixin responsive-mobile {
+      @media (max-width: $breakpoint-mobile) {
+        @content;
+      }
+    }
+
+    @mixin responsive-small-mobile {
+      @media (max-width: $breakpoint-small-mobile) {
+        @content;
+      }
+    }
+
+    @mixin card-style {
+      background: $card-bg;
+      border-radius: $border-radius;
+      box-shadow: $shadow;
+      padding: $spacing-lg;
+      transition: transform 0.3s ease;
+    }
+
+    // ===================== 基础样式 =====================
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: $bg-color;
+      padding: $spacing-md;
+      @include flex-center;
+      flex-direction: column;
+      gap: $spacing-lg;
+    }
+
+    // ===================== 标题样式 =====================
+    .page-title {
+      font-size: 28px;
+      color: $primary-color;
+      font-weight: 600;
+      text-align: center;
+      @include responsive-mobile {
+        font-size: 24px;
+      }
+      @include responsive-small-mobile {
+        font-size: 20px;
+      }
+    }
+
+    // ===================== 卡片容器 =====================
+    .card-container {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: $spacing-md;
+      @include responsive-mobile {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: $spacing-sm;
+      }
+      @include responsive-small-mobile {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    // ===================== 卡片组件 =====================
+    .feature-card {
+      @include card-style;
+      text-align: center;
+    }
+
+    .feature-card .card-icon {
+      font-size: 48px;
+      margin-bottom: $spacing-sm;
+      color: $primary-color;
+    }
+
+    .feature-card .card-title {
+      font-size: 18px;
+      color: $text-primary;
+      margin-bottom: $spacing-sm;
+    }
+
+    .feature-card .card-desc {
+      font-size: 14px;
+      color: $text-secondary;
+      line-height: 1.6;
+    }
+
+    // ===================== 按钮样式 =====================
+    .action-btn {
+      margin-top: $spacing-md;
+      padding: 12px 24px;
+      background: $primary-color;
+      color: white;
+      border: none;
+      border-radius: $border-radius;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .action-btn:hover {
+      background: $primary-dark;
+    }
+
+    .action-btn:active {
+      transform: scale(0.98);
+    }
+
+    @include responsive-mobile {
+      .action-btn {
+        width: 100%;
+        padding: 14px;
+      }
+    }
+  </style>
+  <!-- 编译后的CSS将插入到这里 -->
+  <style id="compiled-css"></style>
+</head>
+<body>
+  <h1 class="page-title">✨ Sass 双端适配演示（修复版）</h1>
+
+  <div class="card-container">
+    <div class="feature-card">
+      <div class="card-icon">🎨</div>
+      <h3 class="card-title">Sass 变量</h3>
+      <p class="card-desc">统一管理颜色、尺寸、间距，修改时只需调整变量，全局生效，适配双端样式</p>
+      <button class="action-btn">查看变量</button>
+    </div>
+
+    <div class="feature-card">
+      <div class="card-icon">🔧</div>
+      <h3 class="card-title">混入复用</h3>
+      <p class="card-desc">提取重复样式片段，如居中布局、卡片样式，减少冗余代码，提升开发效率</p>
+      <button class="action-btn">查看混入</button>
+    </div>
+
+    <div class="feature-card">
+      <div class="card-icon">📱</div>
+      <h3 class="card-title">双端适配</h3>
+      <p class="card-desc">基于 Sass 断点变量，自动适配电脑/手机端，布局、字号、间距智能调整</p>
+      <button class="action-btn">切换设备</button>
+    </div>
+  </div>
+
+  <script>
+    // 核心修复：使用Sass.js稳定编译，避免语法兼容问题
+    window.addEventListener('DOMContentLoaded', function() {
+      try {
+        // 获取Sass源码和编译后CSS的容器
+        const scssSource = document.getElementById('scss-source').textContent;
+        const compiledCssEl = document.getElementById('compiled-css');
+
+        // 编译Sass（同步编译，稳定无延迟）
+        Sass.compile(scssSource, function(result) {
+          if (result.status === 0) {
+            // 编译成功，插入CSS
+            compiledCssEl.textContent = result.text;
+            console.log('✅ Sass编译成功');
+          } else {
+            // 编译失败，显示错误信息
+            console.error('❌ Sass编译错误：', result.message);
+            alert('Sass编译失败：' + result.message);
+            // 降级使用基础样式，避免页面空白
+            compiledCssEl.textContent = `
+              body { background: #f5f7fa; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+              .page-title { color: #42b983; font-size: 24px; text-align: center; margin-bottom: 20px; }
+              .card-container { width: 100%; max-width: 1200px; display: grid; grid-template-columns: 1fr; gap: 16px; }
+              .feature-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+              .action-btn { width: 100%; padding: 12px; background: #42b983; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 12px; }
+            `;
+          }
+        });
+
+        // 按钮交互
+        document.querySelectorAll('.action-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            alert(`点击了「${this.textContent}」按钮（双端适配正常）`);
+          });
+        });
+      } catch (error) {
+        console.error('❌ 脚本执行错误：', error);
+        alert('页面加载出错，请刷新重试');
+      }
+    });
+  </script>
+</body>
+</html>

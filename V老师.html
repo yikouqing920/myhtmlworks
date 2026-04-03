@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Vue3 随机名言卡片</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+    body { min-height: 100vh; background: #f8f9fa; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .card { width: 100%; max-width: 600px; background: #fff; border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .quote { font-size: 20px; color: #333; line-height: 1.8; margin-bottom: 24px; text-align: center; }
+    .author { font-size: 16px; color: #666; text-align: right; margin-bottom: 24px; }
+    .btn { width: 100%; padding: 14px; background: #42b983; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background 0.3s; }
+    .btn:hover { background: #359469; }
+    /* 手机端适配 */
+    @media (max-width: 768px) {
+      .card { padding: 24px; }
+      .quote { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="card">
+      <div class="quote">{{ currentQuote.content }}</div>
+      <div class="author">— {{ currentQuote.author }}</div>
+      <button class="btn" @click="getRandomQuote">换一句名言</button>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue;
+    createApp({
+      setup() {
+        // 名言数据源
+        const quotes = ref([
+          { content: "行而不辍，未来可期", author: "佚名" },
+          { content: "星光不负赶路人，时光不负有心人", author: "佚名" },
+          { content: "半山腰总是挤的，你得去山顶看看", author: "佚名" },
+          { content: "努力的意义，是让自己有选择的权利", author: "佚名" },
+          { content: "慢慢来，谁还没个努力的过程", author: "佚名" }
+        ]);
+        // 当前显示的名言
+        const currentQuote = ref(quotes.value[Math.floor(Math.random() * quotes.value.length)]);
+        // 随机切换名言
+        const getRandomQuote = () => {
+          currentQuote.value = quotes.value[Math.floor(Math.random() * quotes.value.length)];
+        };
+        return { currentQuote, getRandomQuote };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>万能表格 | Vite工程化版</title>
+  <style>
+    /* Vite工程化：CSS变量抽离（统一维护主题/尺寸） */
+    :root {
+      /* 主题色 */
+      --title-color: gold;
+      --border-color: #000;
+      --text-color: #000;
+      --bg-color: #fff;
+      /* 尺寸变量（多端适配） */
+      --title-font-size-pc: 25px;
+      --title-font-size-mobile: 20px;
+      --cell-font-size-pc: 12px;
+      --cell-font-size-mobile: 14px;
+      /* 间距/比例 */
+      --container-gap: 20px;
+      --table-wrap-w-pc: 50%;
+      --table-wrap-w-mobile: 90%;
+      --table-wrap-h-pc: 50vh;
+      --table-wrap-h-mobile: 40vh;
+    }
+
+    /* 工程化样式重置：Vite项目通用基础重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg-color);
+    }
+
+    /* 页面容器：弹性布局，全局居中（Vite项目通用布局） */
+    #app {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--container-gap);
+      padding: 16px;
+    }
+
+    /* 表格标题组件：语义化类名，多端字号适配 */
+    .table-title {
+      font-size: var(--title-font-size-pc);
+      color: var(--title-color);
+      font-weight: 500;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* 表格容器：多端宽高比例自适应，保证1:1基础比例 */
+    .table-wrap {
+      width: var(--table-wrap-w-pc);
+      height: var(--table-wrap-h-pc);
+      min-width: 280px;
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 万能表格核心：固定布局保证单元格等宽等高，Vite工程化性能优化 */
+    .universal-table {
+      width: 100%;
+      height: 100%;
+      border-collapse: collapse;
+      table-layout: fixed; /* 固定布局，避免内容影响单元格尺寸 */
+    }
+
+    /* 单元格样式：多端适配，交互增强（Vite项目用户体验优化） */
+    .universal-table td {
+      border: 1px solid var(--border-color);
+      text-align: center;
+      vertical-align: middle;
+      font-size: var(--cell-font-size-pc);
+      color: var(--text-color);
+      white-space: nowrap;
+      padding: 4px;
+      transition: background-color 0.2s ease; /* 过渡动画，提升体验 */
+    }
+
+    /* 单元格hover交互：Vite工程化通用交互效果 */
+    .universal-table td:hover {
+      background-color: rgba(255, 215, 0, 0.1);
+      cursor: default;
+    }
+
+    /* 媒体查询：Vite项目通用断点（768px），手机/电脑端自适应 */
+    @media (max-width: 768px) {
+      .table-title {
+        font-size: var(--title-font-size-mobile);
+      }
+      .table-wrap {
+        width: var(--table-wrap-w-mobile);
+        height: var(--table-wrap-h-mobile);
+      }
+      .universal-table td {
+        font-size: var(--cell-font-size-mobile);
+      }
+    }
+
+    /* 小屏手机适配（480px）：压缩最小尺寸，保证显示完整 */
+    @media (max-width: 480px) {
+      .table-wrap {
+        min-width: 240px;
+        min-height: 240px;
+      }
+      :root {
+        --container-gap: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Vite工程化：根容器（对应Vue/React项目根节点） -->
+  <div id="app">
+    <!-- 表格标题 -->
+    <h1 class="table-title">万能表格</h1>
+    <!-- 表格容器 -->
+    <div class="table-wrap">
+      <table class="universal-table" id="universalTable">
+        <!-- 表格内容：模块化JS动态渲染（Vite工程化数据驱动） -->
+      </table>
+    </div>
+  </div>
+
+  <script type="module">
+    // Vite核心规范：ESModule模块化（type="module"）
+    // 单独运行可直接使用，融入Vite项目可直接抽离为src/utils/table.js
+
+    /********************* 模块1：表格配置与数据（单独维护，便于修改） *********************/
+    const TABLE_CONFIG = {
+      rowCount: 2,
+      colCount: 4,
+      cellData: [
+        ['加油', '努力', '幸运', '好运'],
+        ['幸福', '平安', '健康', '暴富']
+      ]
+    };
+
+    /********************* 模块2：工具函数（模块化抽离，可复用） *********************/
+    /**
+     * 渲染万能表格
+     * @param {string} tableId - 表格DOMID
+     * @param {Array} cellData - 表格数据
+     */
+    function renderTable(tableId, cellData) {
+      const table = document.getElementById(tableId);
+      if (!table) return console.error('表格DOM节点不存在');
+      
+      // 清空表格，避免重复渲染
+      table.innerHTML = '';
+      
+      // 动态渲染行和列（数据驱动，符合Vite工程化思维）
+      cellData.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(cellText => {
+          const td = document.createElement('td');
+          td.textContent = cellText;
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      });
+    }
+
+    /**
+     * 窗口大小监听：适配窗口缩放，重新渲染表格（Vite项目性能优化）
+     */
+    function initResizeListener() {
+      let resizeTimer = null;
+      window.addEventListener('resize', () => {
+        // 防抖处理，避免频繁渲染
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          renderTable('universalTable', TABLE_CONFIG.cellData);
+        }, 100);
+      });
+    }
+
+    /********************* 模块3：入口函数（Vite项目通用初始化方式） *********************/
+    function initApp() {
+      // 初始化渲染表格
+      renderTable('universalTable', TABLE_CONFIG.cellData);
+      // 初始化窗口缩放监听
+      initResizeListener();
+      // 控制台日志（Vite项目开发调试通用）
+      console.log('✅ 万能表格初始化完成（Vite工程化版）');
+      console.log('📱 手机端自适应，💻 电脑端原生比例');
+    }
+
+    /********************* 启动应用（DOM加载完成后执行） *********************/
+    document.addEventListener('DOMContentLoaded', initApp);
+
+    // 暴露全局API（Vite项目中可通过export导出，供其他模块调用）
+    window.TableApi = {
+      renderTable,
+      updateData: (newData) => {
+        if (Array.isArray(newData) && newData.length) {
+          TABLE_CONFIG.cellData = newData;
+          renderTable('universalTable', newData);
+        }
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开心的运动</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html, body {
+    width: 100%;
+    min-height: 100vh; /* 改为最小高度，适配滚动 */
+    background: #000;
+    overflow-x: hidden; /* 仅隐藏横向滚动，纵向允许滑动 */
+  }
+  /* 页面头部 - 导航+标题区 */
+  header {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(0,0,0,0.8);
+    border-bottom: 2px solid gold;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+  }
+  /* 导航标签样式 */
+  nav {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  nav a {
+    color: gold;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  nav a:hover {
+    color: #32cd32;
+  }
+  .header-title {
+    color: gold; /* 第一行标题颜色改为gold颜色代码 */
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+  /* 核心主体容器 - 替代原container，承载主要内容 */
+  main {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 10px;
+  }
+  /* 主内容区 - 运动卡片集合 */
+  section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 10px;
+  }
+  /* 独立内容卡片 - 用article包裹，表意独立 */
+  article {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  /* 标题样式 */
+  .title {
+    font-weight: bold;
+    text-align: center;
+    color: gold;
+  }
+  .title-big {
+    font-size: 24px;
+  }
+  .title-normal {
+    font-size: 20px;
+  }
+  /* 图文组合块 - 用figure+figcaption规范包裹 */
+  figure {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  figure img {
+    display: block;
+    width: 90%;
+    height: auto;
+    object-fit: contain;
+    image-rendering: high-quality;
+    loading: lazy;
+    decoding: async;
+    border-radius: 8px;
+  }
+  /* 图注/鼓励语 - 用figcaption替代原quote */
+  figcaption {
+    font-size: 16px;
+    color: #32cd32;
+    text-align: center;
+    line-height: 1.6;
+    max-width: 90%;
+    padding-bottom: 10px;
+  }
+  /* 侧边栏 - 辅助内容区，用aside标签 */
+  aside {
+    width: 220px;
+    padding: 20px 15px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid gold;
+    border-radius: 8px;
+    margin-left: 10px;
+    align-self: flex-start;
+  }
+  .aside-title {
+    color: gold;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #32cd32;
+    padding-bottom: 8px;
+  }
+  .aside-list {
+    color: #fff;
+    line-height: 2;
+    padding-left: 10px;
+  }
+  .aside-list li {
+    margin-bottom: 8px;
+  }
+  /* 页面底部 - 固定底部，显示运动快乐 */
+  footer {
+    width: 100%;
+    height: 60px;
+    background: rgba(0,0,0,0.9);
+    border-top: 2px solid gold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: sticky;
+    bottom: 0;
+    z-index: 99;
+  }
+  .footer-text {
+    color: #00CCFF; /* 底部文字颜色改为#00CCFF */
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+  /* 移动端适配 - 侧边栏下移，适配小屏 */
+  @media (max-width: 768px) {
+    main {
+      flex-direction: column;
+      gap: 20px;
+    }
+    aside {
+      width: 100%;
+      margin-left: 0;
+      align-self: auto;
+    }
+    nav {
+      gap: 15px;
+    }
+    .footer-text {
+      font-size: 18px;
+    }
+  }
+</style>
+</head>
+<body>
+  <!-- 页面头部：包含导航+标题，必用header+nav -->
+  <header>
+    <nav>
+      <a href="#park">人民公园</a>
+      <a href="#court">球场故事</a>
+      <a href="#pingpong">乒乓球故事</a>
+    </nav>
+    <div class="header-title">开心的运动 · 步履不停</div>
+  </header>
+  <!-- 页面核心主体：必用main，包含主内容区+侧边栏 -->
+  <main>
+    <!-- 主内容区：运动卡片集合，必用section -->
+    <section>
+      <!-- 独立内容1：河源人民公园，必用article+figure+figcaption -->
+      <article id="park">
+        <h2 class="title title-big">河源人民公园</h2>
+        <figure>
+          <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESYyFpx9MzT2aL_7cKjowINT_cw8fCXQAC9yIAAqaPQVaAee-i-MnhpToE.jpg" alt="河源人民公园" loading="lazy">
+          <figcaption>夜风正好，抬脚便是光，跑赢昨日的自己。</figcaption>
+        </figure>
+      </article>
+      <!-- 独立内容2：球场的故事，必用article+figure+figcaption -->
+      <article id="court">
+        <h2 class="title title-normal">球场的故事</h2>
+        <figure>
+          <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESYyJpx9OuRYgc3oM0ZOy3_rDxgsJKQgAC-CIAAqaPQVYRHxOy64DdTjoE.jpg" alt="球场的故事" loading="lazy">
+          <figcaption>别停，这一步跨出去，风会为你让路。</figcaption>
+        </figure>
+      </article>
+      <!-- 独立内容3：乒乓球的故事，必用article+figure+figcaption -->
+      <article id="pingpong">
+        <h2 class="title title-normal">乒乓球的故事</h2>
+        <figure>
+          <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESYyNpx9PukWhebMfnCjP1ecwv5K8AATwAAvsiAAKmj0FWz61yaf3q0X46BA.jpg" alt="乒乓球的故事" loading="lazy">
+          <figcaption>山河在侧，迈开步，把远方踩成脚下。</figcaption>
+        </figure>
+      </article>
+    </section>
+    <!-- 侧边栏：辅助运动贴士，必用aside -->
+    <aside>
+      <h3 class="aside-title">运动小贴士</h3>
+      <ul class="aside-list">
+        <li>运动前做好热身，避免受伤</li>
+        <li>饭后1小时再进行剧烈运动</li>
+        <li>适量补水，保持身体活力</li>
+        <li>坚持每日运动，收获好身体</li>
+        <li>心态放松，享受运动乐趣</li>
+      </ul>
+    </aside>
+  </main>
+  <!-- 页面底部：固定显示运动快乐，必用footer -->
+  <footer>
+    <div class="footer-text">运动快乐</div>
+  </footer>
+</body>
+</html>

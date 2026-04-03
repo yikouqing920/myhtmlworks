@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS3+JS 交互综合动画</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Microsoft YaHei", sans-serif;
+    padding: 50px 20px;
+  }
+  /* 动画舞台容器 */
+  #main {
+    width: 150px;
+    height: 150px;
+    border: 2px #333 solid;
+    border-radius: 8px;
+    position: relative;
+    margin: 0 auto 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: #f8f8f8;
+  }
+  /* 动画方块：核心特效元素 */
+  #box {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    /* 基础动画配置：默认2秒/圈，缓动，无限循环 */
+    animation: 2s coolMove infinite ease-in-out;
+    animation-play-state: running; /* 初始播放状态 */
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  /* 交互按钮容器：居中布局 */
+  .btn-group {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  /* 按钮样式：美观易点击 */
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #007aff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn:hover {
+    background: #0066cc;
+    transform: scale(1.05);
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn-reset {
+    background: #ff3b30;
+  }
+  .btn-reset:hover {
+    background: #e63024;
+  }
+  /* 核心CSS3综合动画：弹跳+变色+缩放+形状切换+四向循环 */
+  @keyframes coolMove {
+    0% { transform: translate(0, 0) scale(1); background: #ff3b30; border-radius: 8px; }
+    12.5% { transform: translate(50px, -10px) scale(1.1); background: #ff9500; }
+    25% { transform: translate(100px, 0) scale(1); background: #ffcc00; border-radius: 50%; }
+    37.5% { transform: translate(100px, 50px) scale(1.1); background: #34c759; }
+    50% { transform: translate(100px, 100px) scale(1); background: #007aff; border-radius: 8px; }
+    62.5% { transform: translate(50px, 100px) scale(1.1); background: #5856d6; }
+    75% { transform: translate(0, 100px) scale(1); background: #af52de; border-radius: 50%; }
+    87.5% { transform: translate(0, 50px) scale(1.1); background: #ff2d55; }
+    100% { transform: translate(0, 0) scale(1); background: #ff3b30; border-radius: 8px; }
+  }
+</style>
+</head>
+<body>
+  <!-- 动画舞台 -->
+  <div id="main">
+    <div id="box"></div>
+  </div>
+  <!-- 交互控制按钮 -->
+  <div class="btn-group">
+    <button class="btn" id="playPauseBtn">暂停</button>
+    <button class="btn" id="slowBtn">慢速(3s)</button>
+    <button class="btn" id="fastBtn">快速(1s)</button>
+    <button class="btn btn-reset" id="resetBtn">重置</button>
+  </div>
+
+  <script>
+    // 获取核心元素
+    const box = document.getElementById('box');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const slowBtn = document.getElementById('slowBtn');
+    const fastBtn = document.getElementById('fastBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    
+    // 初始状态：播放中，默认时长2s
+    let isPlaying = true;
+    const defaultDuration = '2s';
+
+    // 1. 暂停/播放切换
+    playPauseBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        // 暂停动画
+        box.style.animationPlayState = 'paused';
+        playPauseBtn.innerText = '播放';
+      } else {
+        // 继续播放
+        box.style.animationPlayState = 'running';
+        playPauseBtn.innerText = '暂停';
+      }
+      isPlaying = !isPlaying;
+    });
+
+    // 2. 慢速模式：3秒/圈
+    slowBtn.addEventListener('click', () => {
+      updateAnimationDuration('3s');
+      // 切换后保持当前播放状态
+      box.style.animationPlayState = isPlaying ? 'running' : 'paused';
+    });
+
+    // 3. 快速模式：1秒/圈
+    fastBtn.addEventListener('click', () => {
+      updateAnimationDuration('1s');
+      box.style.animationPlayState = isPlaying ? 'running' : 'paused';
+    });
+
+    // 4. 重置动画：恢复默认2秒/圈，回到起点并播放
+    resetBtn.addEventListener('click', () => {
+      // 重置核心样式
+      box.style.animation = '';
+      // 重新赋值默认动画，强制回到起点
+      setTimeout(() => {
+        box.style.animation = `${defaultDuration} coolMove infinite ease-in-out`;
+        box.style.animationPlayState = 'running';
+      }, 50);
+      // 恢复按钮和状态
+      playPauseBtn.innerText = '暂停';
+      isPlaying = true;
+    });
+
+    // 通用方法：更新动画时长（复用代码，避免冗余）
+    function updateAnimationDuration(duration) {
+      // 获取当前动画的所有属性，仅替换时长
+      const currentAnimation = box.style.animation || getComputedStyle(box).animation;
+      const newAnimation = currentAnimation.replace(/\d+s/, duration);
+      box.style.animation = newAnimation;
+    }
+  </script>
+</body>
+</html>
