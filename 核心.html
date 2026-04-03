@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>前端三大核心原理演示</title>
+  <!-- 稳定CDN引入React 18 + ReactDOM，适配所有浏览器 -->
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.9/babel.min.js"></script>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --spacing-sm: 12px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --breakpoint-mobile: 768px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      padding: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-lg);
+    }
+
+    .page-title {
+      font-size: 28px;
+      color: var(--primary);
+      font-weight: 600;
+      text-align: center;
+      margin-top: var(--spacing-md);
+    }
+
+    .demo-container {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: var(--spacing-md);
+    }
+
+    .demo-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: var(--spacing-lg);
+      transition: transform 0.3s ease;
+    }
+
+    .demo-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-title {
+      font-size: 20px;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .demo-area {
+      min-height: 120px;
+      padding: var(--spacing-md);
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .log-area {
+      font-size: 13px;
+      color: var(--text-primary);
+      background: #f1f5f9;
+      padding: var(--spacing-sm);
+      border-radius: 6px;
+      min-height: 60px;
+      width: 100%;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    /* CSS响应式演示专用样式 */
+    .responsive-box {
+      width: 100%;
+      height: 80px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    /* 媒体查询：CSS响应式本质核心 */
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 24px;
+      }
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+      .responsive-box {
+        background: #ef4444;
+        font-size: 16px;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .responsive-box {
+        background: #f59e0b;
+        font-size: 18px;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .responsive-box {
+        background: #10b981;
+        font-size: 20px;
+      }
+    }
+
+    .footer {
+      margin-top: auto;
+      color: var(--text-secondary);
+      font-size: 12px;
+      text-align: center;
+      padding: var(--spacing-md);
+    }
+  </style>
+</head>
+<body>
+  <h1 class="page-title">🚀 前端三大核心原理演示</h1>
+
+  <div class="demo-container">
+    <!-- 1. React Hooks 原理演示 -->
+    <div class="demo-card">
+      <h2 class="card-title">⚛️ React Hooks 原理</h2>
+      <p class="card-desc">
+        核心：<strong>useState</strong> 让函数组件拥有状态，<strong>useEffect</strong> 处理副作用。
+        原理：React 维护 Hooks 调用链表，按顺序绑定状态，实现状态复用与逻辑抽离。
+      </p>
+      <div id="hooks-demo" class="demo-area"></div>
+      <div class="log-area" id="hooks-log">点击按钮触发状态更新...</div>
+    </div>
+
+    <!-- 2. CSS响应式本质演示 -->
+    <div class="demo-card">
+      <h2 class="card-title">📱 CSS 响应式本质</h2>
+      <p class="card-desc">
+        核心：<strong>媒体查询 @media</strong>，根据屏幕尺寸（视口宽度）动态应用不同样式。
+        本质：「条件样式」，通过断点适配不同设备，实现一套代码双端运行。
+      </p>
+      <div class="demo-area">
+        <div class="responsive-box">
+          电脑端：绿色 | 平板：橙色 | 手机：红色
+        </div>
+        <p style="font-size: 13px; color: var(--text-secondary);">
+          缩放浏览器窗口，查看样式自动变化
+        </p>
+      </div>
+      <div class="log-area">
+        响应式断点：<br>
+        • ＞1024px（电脑）：绿色大字体<br>
+        • 768-1024px（平板）：橙色中字体<br>
+        • ＜768px（手机）：红色小字体
+      </div>
+    </div>
+
+    <!-- 3. JS异步机制演示 -->
+    <div class="demo-card">
+      <h2 class="card-title">⏳ JS 异步机制</h2>
+      <p class="card-desc">
+        核心：<strong>事件循环（Event Loop）</strong>，同步代码先执行，异步任务（定时器/Promise）进入任务队列，主线程空闲时执行。
+        本质：单线程非阻塞，通过异步机制实现高效并发。
+      </p>
+      <div class="demo-area">
+        <button class="btn" id="async-btn">触发异步任务</button>
+      </div>
+      <div class="log-area" id="async-log">点击按钮查看执行顺序...</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    前端三大核心原理演示 | 双端适配 | GitHub Pages 直接运行
+  </div>
+
+  <script type="text/babel">
+    // ===================== 1. React Hooks 原理演示 =====================
+    const { useState, useEffect } = React;
+
+    // 日志工具
+    const logHooks = (msg) => {
+      const logEl = document.getElementById('hooks-log');
+      logEl.textContent = msg;
+    };
+
+    // Hooks 组件：演示useState + useEffect
+    const HooksDemo = () => {
+      // useState：声明状态，返回[状态值, 更新函数]
+      const [count, setCount] = useState(0);
+      const [msg, setMsg] = useState('初始状态');
+
+      // useEffect：副作用钩子，模拟生命周期
+      useEffect(() => {
+        logHooks(`useEffect 触发：count 变为 ${count}，组件更新`);
+        // 清理函数：组件卸载时执行
+        return () => {
+          console.log('useEffect 清理函数执行');
+        };
+      }, [count]); // 依赖项：仅count变化时触发
+
+      return (
+        <div style={{ width: '100%', textAlign: 'center' }}>
+          <p style={{ fontSize: '18px', marginBottom: '12px' }}>
+            计数器：{count} | 状态：{msg}
+          </p>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button className="btn" onClick={() => setCount(count + 1)}>
+              +1（useState 更新）
+            </button>
+            <button className="btn" onClick={() => setMsg('状态已更新')}>
+              修改状态
+            </button>
+            <button className="btn" onClick={() => { setCount(0); setMsg('重置状态'); }}>
+              重置
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    // 渲染Hooks组件
+    const root = ReactDOM.createRoot(document.getElementById('hooks-demo'));
+    root.render(<HooksDemo />);
+
+    // ===================== 3. JS异步机制演示 =====================
+    const logAsync = (msg) => {
+      const logEl = document.getElementById('async-log');
+      logEl.textContent = msg;
+    };
+
+    document.getElementById('async-btn').addEventListener('click', () => {
+      logAsync('开始执行...\n');
+      let log = '';
+
+      // 1. 同步任务：优先执行
+      log += '1. 同步代码：主线程直接执行\n';
+      logAsync(log);
+
+      // 2. 宏任务：定时器（进入宏任务队列）
+      setTimeout(() => {
+        log += '3. 宏任务（setTimeout）：主线程空闲后执行\n';
+        logAsync(log);
+      }, 0);
+
+      // 3. 微任务：Promise（进入微任务队列，优先级高于宏任务）
+      Promise.resolve().then(() => {
+        log += '2. 微任务（Promise）：同步代码执行完立即执行\n';
+        logAsync(log);
+      });
+
+      // 4. 同步收尾
+      log += '同步代码执行完毕，等待异步任务...\n';
+      logAsync(log);
+    });
+  </script>
+</body>
+</html>
