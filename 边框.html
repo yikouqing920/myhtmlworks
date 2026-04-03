@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>四层边框特效+爱心烟花实时时间</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* 粉色背景+整体滑动，适配OPPO流畅滚动，承载所有内容 */
+        body {
+            width: 100vw;
+            min-height: 100vh;
+            background: #ffc0cb;
+            position: relative;
+            font-family: "Microsoft YaHei", sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px;
+        }
+        /* 核心四层边框容器：居中悬浮，层级最高，承载日期时间+四层边框+图形特效 */
+        .datetime-wrapper {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            text-align: center;
+            /* 四层边框的内边距，给边框留空间 */
+            padding: 20px;
+            /* 1/2角圆角，3/4角内阴影核心样式 */
+            border-radius: 20px 20px 0 0;
+            box-shadow: inset 8px 8px 15px rgba(0, 0, 0, 0.2), inset -8px -8px 15px rgba(0, 0, 0, 0.1);
+        }
+        /* 第一层：虚线边框+黄色发光+三角形环绕特效 */
+        .border-layer1 {
+            padding: 15px;
+            border: 3px dashed #fff;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 0 20px #ffff00, 0 0 30px #ffff00;
+            position: relative;
+        }
+        /* 第二层：点线边框+绿色发光+五角星环绕特效 */
+        .border-layer2 {
+            padding: 15px;
+            border: 3px dotted #fff;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00;
+            position: relative;
+        }
+        /* 第三层：双线边框+紫色发光+梯形环绕特效 */
+        .border-layer3 {
+            padding: 15px;
+            border: 4px double #fff;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 0 20px #9933cc, 0 0 30px #9933cc;
+            position: relative;
+        }
+        /* 第四层：实线边框+蓝色发光+爱心环绕特效+日期时间容器 */
+        .datetime-container {
+            padding: 20px 30px;
+            border: 3px solid #fff;
+            border-radius: 4px 4px 0 0;
+            box-shadow: 0 0 20px #0000ff, 0 0 30px #0000ff;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            position: relative;
+        }
+        /* 日期样式：蓝色，大字号粗体，高清无锯齿 */
+        .date-box {
+            font-size: 40px;
+            font-weight: bold;
+            color: #0000ff;
+            margin-bottom: 15px;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* 时间样式：蓝色，超大字号粗体，字间距优化，高清无锯齿 */
+        .time-box {
+            font-size: 60px;
+            font-weight: bold;
+            color: #0000ff;
+            letter-spacing: 3px;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* 所有环绕图形特效：绝对定位，指针事件穿透，不影响交互 */
+        .shape {
+            position: absolute;
+            pointer-events: none;
+            z-index: -1;
+            animation: rotate 15s linear infinite;
+        }
+        /* 三角形特效（第一层专属）- 黄色 */
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 18px solid #ffff00;
+            opacity: 0.8;
+        }
+        /* 五角星特效（第二层专属）- 绿色，用伪元素实现标准五星 */
+        .star {
+            width: 20px;
+            height: 20px;
+            background: #00ff00;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            opacity: 0.8;
+        }
+        /* 梯形特效（第三层专属）- 紫色 */
+        .trapezoid {
+            width: 25px;
+            height: 0;
+            border-bottom: 18px solid #9933cc;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            opacity: 0.8;
+        }
+        /* 爱心特效（第四层专属）- 蓝色，尖部向下，和页面爱心呼应 */
+        .heart-shape {
+            width: 18px;
+            height: 18px;
+            background: #0000ff;
+            transform: rotate(45deg) translateY(4px);
+            opacity: 0.8;
+        }
+        .heart-shape::before, .heart-shape::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #0000ff;
+        }
+        .heart-shape::before {
+            top: -9px;
+            left: 0;
+        }
+        .heart-shape::after {
+            top: 0;
+            left: -9px;
+        }
+        /* 图形环绕旋转动画，流畅无卡顿 */
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* 特效元素统一样式：绝对定位，指针事件穿透，不影响时间点击 */
+        .heart, .bubble, .firework {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+        }
+        /* 爱心样式：固定形状，尖部向下，不拉伸变形，高清渲染 */
+        .heart {
+            width: 30px;
+            height: 30px;
+            background: red;
+            transform: rotate(45deg) translateY(7.5px);
+            -webkit-transform: rotate(45deg) translateY(7.5px);
+            image-rendering: high-quality;
+        }
+        .heart::before, .heart::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: red;
+        }
+        .heart::before {
+            top: -15px;
+            left: 0;
+        }
+        .heart::after {
+            top: 0;
+            left: -15px;
+        }
+        /* 泡泡样式：圆形，渐变透明，有光泽，高清无锯齿 */
+        .bubble {
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.9), inset 0 0 5px #fff;
+            image-rendering: high-quality;
+        }
+        /* 烟花粒子优化：高清渲染，避免模糊 */
+        .firework div {
+            image-rendering: pixelated;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        /* OPPO/平板/电脑多端适配，缩放所有元素，保证布局不变 */
+        @media (max-width: 768px) {
+            .datetime-wrapper {
+                padding: 15px;
+            }
+            .border-layer1, .border-layer2, .border-layer3 {
+                padding: 10px;
+            }
+            .datetime-container {
+                padding: 15px 20px;
+            }
+            .date-box {
+                font-size: 28px;
+                margin-bottom: 10px;
+            }
+            .time-box {
+                font-size: 40px;
+                letter-spacing: 2px;
+            }
+            /* 适配小屏图形大小 */
+            .triangle {
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-bottom: 14px solid #ffff00;
+            }
+            .star {
+                width: 16px;
+                height: 16px;
+            }
+            .trapezoid {
+                width: 20px;
+                border-bottom: 14px solid #9933cc;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+            }
+            .heart-shape {
+                width: 14px;
+                height: 14px;
+            }
+            .heart-shape::before, .heart-shape::after {
+                width: 14px;
+                height: 14px;
+            }
+            .heart-shape::before {
+                top: -7px;
+            }
+            .heart-shape::after {
+                left: -7px;
+            }
+            /* 小屏爱心大小适配 */
+            .heart {
+                width: 20px;
+                height: 20px;
+            }
+            .heart::before, .heart::after {
+                width: 20px;
+                height: 20px;
+            }
+            .heart::before {
+                top: -10px;
+            }
+            .heart::after {
+                left: -10px;
+            }
+        }
+        @media (max-width: 480px) {
+            .datetime-wrapper {
+                padding: 10px;
+                border-radius: 16px 16px 0 0;
+            }
+            .border-layer1 {
+                border-radius: 12px 12px 0 0;
+            }
+            .border-layer2 {
+                border-radius: 8px 8px 0 0;
+            }
+            .border-layer3 {
+                border-radius: 4px 4px 0 0;
+            }
+            .border-layer1, .border-layer2, .border-layer3 {
+                padding: 8px;
+                border-width: 2px;
+            }
+            .datetime-container {
+                padding: 10px 15px;
+                border-width: 2px;
+            }
+            .date-box {
+                font-size: 22px;
+            }
+            .time-box {
+                font-size: 30px;
+            }
+            /* 超小屏图形大小适配 */
+            .triangle {
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-bottom: 10px solid #ffff00;
+            }
+            .star {
+                width: 12px;
+                height: 12px;
+            }
+            .trapezoid {
+                width: 16px;
+                border-bottom: 10px solid #9933cc;
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+            }
+            .heart-shape {
+                width: 10px;
+                height: 10px;
+            }
+            .heart-shape::before, .heart-shape::after {
+                width: 10px;
+                height: 10px;
+            }
+            .heart-shape::before {
+                top: -5px;
+            }
+            .heart-shape::after {
+                left: -5px;
+            }
+            /* 超小屏爱心大小适配 */
+            .heart {
+                width: 15px;
+                height: 15px;
+            }
+            .heart::before, .heart::after {
+                width: 15px;
+                height: 15px;
+            }
+            .heart::before {
+                top: -7.5px;
+            }
+            .heart::after {
+                left: -7.5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 四层边框外层容器：承载所有边框和图形特效 -->
+    <div class="datetime-wrapper" id="borderWrapper">
+        <!-- 第一层：虚线+黄光+三角形 -->
+        <div class="border-layer1" id="layer1">
+            <!-- 第二层：点线+绿光+五角星 -->
+            <div class="border-layer2" id="layer2">
+                <!-- 第三层：双线+紫光+梯形 -->
+                <div class="border-layer3" id="layer3">
+                    <!-- 第四层：实线+蓝光+爱心+日期时间 -->
+                    <div class="datetime-container">
+                        <div class="date-box" id="dateBox"></div>
+                        <div class="time-box" id="timeBox"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================== 实时日期时间模块 =====================
+        const dateBox = document.getElementById('dateBox');
+        const timeBox = document.getElementById('timeBox');
+        const weekArr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        // 更新日期时间方法，保证秒级精准刷新
+        function updateDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const week = weekArr[now.getDay()];
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const second = String(now.getSeconds()).padStart(2, '0');
+            dateBox.innerText = `${year}年${month}月${day}日 ${week}`;
+            timeBox.innerText = `${hour}:${minute}:${second}`;
+        }
+        // 页面加载立即执行，每秒刷新，无延迟
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // ===================== 四层边框环绕图形特效生成 =====================
+        const layer1 = document.getElementById('layer1'); // 三角形-黄色
+        const layer2 = document.getElementById('layer2'); // 五角星-绿色
+        const layer3 = document.getElementById('layer3'); // 梯形-紫色
+        const container = document.querySelector('.datetime-container'); // 爱心-蓝色
+        // 图形生成配置：类型、容器、数量、颜色（和发光对应）
+        const shapeConfig = [
+            { type: 'triangle', parent: layer1, count: 16, cls: 'triangle' },
+            { type: 'star', parent: layer2, count: 20, cls: 'star' },
+            { type: 'trapezoid', parent: layer3, count: 18, cls: 'trapezoid' },
+            { type: 'heart', parent: container, count: 22, cls: 'heart-shape' }
+        ];
+        // 生成环绕图形，均匀分布在边框周围，无重叠
+        function createShape(config) {
+            const parent = config.parent;
+            const parentRect = parent.getBoundingClientRect();
+            const centerX = parentRect.width / 2;
+            const centerY = parentRect.height / 2;
+            const radius = Math.max(centerX, centerY) + 20; // 图形环绕半径
+            // 循环生成指定数量的图形
+            for (let i = 0; i < config.count; i++) {
+                const angle = (i / config.count) * Math.PI * 2;
+                const shape = document.createElement('div');
+                shape.className = `shape ${config.cls}`;
+                // 计算图形位置，均匀环绕
+                const x = centerX + radius * Math.cos(angle) - shape.offsetWidth / 2;
+                const y = centerY + radius * Math.sin(angle) - shape.offsetHeight / 2;
+                shape.style.left = `${x}px`;
+                shape.style.top = `${y}px`;
+                // 随机旋转角度，增加自然感
+                shape.style.rotate = `${Math.random() * 360}deg`;
+                parent.appendChild(shape);
+            }
+        }
+        // 初始化所有图形特效
+        shapeConfig.forEach(item => createShape(item));
+        // 窗口大小变化时重新生成图形，适配OPPO/电脑窗口缩放
+        window.addEventListener('resize', () => {
+            // 先移除原有图形，避免重复
+            document.querySelectorAll('.shape').forEach(ele => ele.remove());
+            // 重新生成
+            shapeConfig.forEach(item => createShape(item));
+        });
+
+        // ===================== 特效核心配置（原爱心/泡泡/烟花） =====================
+        let SCREEN_WIDTH = window.innerWidth;
+        let SCREEN_HEIGHT = window.innerHeight;
+        const DURATION = 3600000; // 特效持续1小时
+        const startTimer = Date.now();
+        // 窗口大小适配，实时更新屏幕宽高
+        window.addEventListener('resize', () => {
+            SCREEN_WIDTH = window.innerWidth;
+            SCREEN_HEIGHT = window.innerHeight;
+        });
+
+        // ===================== 红色爱心向下飘落（优化性能，无卡顿） =====================
+        function createHeart() {
+            if (Date.now() - startTimer > DURATION) return;
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = `${Math.random() * SCREEN_WIDTH}px`;
+            heart.style.top = `-50px`;
+            const speed = Math.random() * 3 + 2;
+            const opacity = Math.random() * 0.6 + 0.4;
+            heart.style.opacity = opacity;
+            // 随机旋转，增加自然感
+            heart.style.rotate = `${Math.random() * 30}deg`;
+            document.body.appendChild(heart);
+            // 用requestAnimationFrame实现流畅动画，OPPO浏览器无卡顿
+            function moveHeart() {
+                if (Date.now() - startTimer > DURATION) {
+                    heart.remove();
+                    return;
+                }
+                const top = parseFloat(heart.style.top) || 0;
+                if (top > SCREEN_HEIGHT) {
+                    heart.remove();
+                    return;
+                }
+                heart.style.top = `${top + speed}px`;
+                requestAnimationFrame(moveHeart);
+            }
+            moveHeart();
+            // 控制生成频率，避免性能消耗过大
+            setTimeout(createHeart, 350);
+        }
+        createHeart();
+
+        // ===================== 泡泡左右往复飘动（左5秒右5秒，边界回弹） =====================
+        function createBubble() {
+            if (Date.now() - startTimer > DURATION) return;
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const size = Math.random() * 30 + 10;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * SCREEN_WIDTH}px`;
+            bubble.style.top = `${Math.random() * SCREEN_HEIGHT}px`;
+            bubble.style.opacity = Math.random() * 0.7 + 0.3;
+            document.body.appendChild(bubble);
+            let isLeft = true;
+            let moveSpeed = Math.random() * 2 + 1;
+            const moveTime = 5000;
+            let directionTimer = Date.now();
+            function moveBubble() {
+                if (Date.now() - startTimer > DURATION) {
+                    bubble.remove();
+                    return;
+                }
+                if (Date.now() - directionTimer > moveTime) {
+                    isLeft = !isLeft;
+                    directionTimer = Date.now();
+                }
+                const left = parseFloat(bubble.style.left) || 0;
+                if (left < 0) isLeft = false;
+                if (left > SCREEN_WIDTH - size) isLeft = true;
+                bubble.style.left = `${isLeft ? left - moveSpeed : left + moveSpeed}px`;
+                requestAnimationFrame(moveBubble);
+            }
+            moveBubble();
+            setTimeout(createBubble, 550);
+        }
+        createBubble();
+
+        // ===================== 烟花随机绽放特效（优化粒子渲染，高清无卡顿） =====================
+        function createFirework() {
+            if (Date.now() - startTimer > DURATION) return;
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = `${Math.random() * SCREEN_WIDTH}px`;
+            firework.style.top = `${Math.random() * SCREEN_HEIGHT}px`;
+            document.body.appendChild(firework);
+            const particleNum = Math.floor(Math.random() * 20) + 30;
+            for (let i = 0; i < particleNum; i++) {
+                const particle = document.createElement('div');
+                particle.style.width = '6px';
+                particle.style.height = '6px';
+                particle.style.borderRadius = '50%';
+                particle.style.background = '#ff0000';
+                particle.style.position = 'absolute';
+                particle.style.top = '0';
+                particle.style.left = '0';
+                // 随机粒子颜色，和爱心呼应，增加层次感
+                particle.style.background = `rgb(255, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 100)})`;
+                firework.appendChild(particle);
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 2;
+                const opacity = Math.random() * 0.8 + 0.2;
+                particle.style.opacity = opacity;
+                let x = 0, y = 0;
+                function moveParticle() {
+                    if (Date.now() - startTimer > DURATION) {
+                        particle.remove();
+                        return;
+                    }
+                    x += Math.cos(angle) * speed;
+                    y += Math.sin(angle) * speed;
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    particle.style.opacity = parseFloat(particle.style.opacity) - 0.01;
+                    if (parseFloat(particle.style.opacity) < 0) {
+                        particle.remove();
+                        return;
+                    }
+                    requestAnimationFrame(moveParticle);
+                }
+                moveParticle();
+            }
+            // 烟花绽放后移除容器，释放内存
+            setTimeout(() => {
+                firework.remove();
+            }, 2000);
+            // 随机绽放间隔，避免密集卡顿
+            setTimeout(createFirework, Math.random() * 2000 + 1000);
+        }
+        createFirework();
+    </script>
+</body>
+</html>
